@@ -1,0 +1,2737 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VintedERP â€” GestÃ£o de Encomendas</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e13;
+    --surface: #19181f;
+    --surface2: #221f2b;
+    --border: #2e2b39;
+    --accent: #c8f25a;
+    --accent2: #7c5cfc;
+    --text: #f0edf8;
+    --muted: #7a748f;
+    --red: #ff5c6a;
+    --yellow: #ffd166;
+    --green: #06d6a0;
+    --blue: #48bfe3;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 13px;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .header-stats {
+    display: flex;
+    gap: 28px;
+  }
+
+  .stat-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .stat-pill .val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--accent);
+  }
+
+  .stat-pill .lbl {
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    padding: 10px 18px;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0f0e13;
+  }
+
+  .btn-primary:hover { background: #d9ff6e; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid var(--red);
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .btn-danger:hover { background: var(--red); color: #fff; }
+
+  /* LAYOUT */
+  .app {
+    display: flex;
+    height: calc(100vh - 61px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 248px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    padding: 22px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--surface);
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #d8d3e8;
+    transition: all 0.12s;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .nav-item:hover {
+    background: #2b2735;
+    color: #ffffff;
+  }
+
+  .nav-item.active {
+    background: var(--accent);
+    color: #151515;
+  }
+
+  .nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.08);
+    color: inherit;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .nav-item.active .nav-icon {
+    background: rgba(0,0,0,0.14);
+  }
+
+  .nav-section {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    color: #aaa3c2;
+    padding: 16px 12px 8px;
+    font-weight: 700;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+    background: var(--bg);
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: 26px;
+    margin-bottom: 6px;
+  }
+
+  .page-sub {
+    color: var(--muted);
+    margin-bottom: 28px;
+    font-size: 12px;
+  }
+
+  /* SEARCH + FILTERS */
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0 14px;
+    flex: 1;
+    max-width: 320px;
+  }
+
+  .search-box input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 9px 0;
+    width: 100%;
+  }
+
+  .search-box input::placeholder { color: var(--muted); }
+
+  select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 9px 12px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  select option { background: var(--surface); }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: var(--surface2);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  th.sortable {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  th.sortable:hover {
+    color: var(--text);
+    background: #2a2634;
+  }
+
+  .sort-arrow {
+    color: var(--accent);
+    display: inline-block;
+    margin-left: 5px;
+    min-width: 12px;
+  }
+
+  td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  tr.row-urgency-pago td {
+    background: rgba(255, 122, 89, 0.18);
+    border-bottom-color: rgba(255, 122, 89, 0.32);
+  }
+
+  tr.row-urgency-pago td:first-child {
+    border-left: 5px solid #ff7a59;
+  }
+
+  tr.row-urgency-pago:hover td {
+    background: rgba(255, 122, 89, 0.26);
+  }
+
+  tr.row-urgency-pendente td {
+    background: rgba(255, 209, 102, 0.11);
+    border-bottom-color: rgba(255, 209, 102, 0.24);
+  }
+
+  tr.row-urgency-pendente td:first-child {
+    border-left: 5px solid var(--yellow);
+  }
+
+  tr.row-urgency-pendente:hover td {
+    background: rgba(255, 209, 102, 0.18);
+  }
+
+  .urgency-label {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding: 3px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0;
+  }
+
+  .urgency-label.ship {
+    color: #fff2ec;
+    background: #d94d29;
+  }
+
+  .urgency-label.wait {
+    color: #342400;
+    background: var(--yellow);
+  }
+
+  .order-id {
+    font-weight: 500;
+    color: var(--accent2);
+    font-size: 12px;
+  }
+
+  .buyer-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .price {
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .badge-pendente { background: rgba(255,209,102,0.15); color: var(--yellow); }
+  .badge-pendente::before { background: var(--yellow); }
+  .badge-pago { background: rgba(6,214,160,0.12); color: var(--green); }
+  .badge-pago::before { background: var(--green); }
+  .badge-enviado { background: rgba(72,191,227,0.12); color: var(--blue); }
+  .badge-enviado::before { background: var(--blue); }
+  .badge-entregue { background: rgba(200,242,90,0.12); color: var(--accent); }
+  .badge-entregue::before { background: var(--accent); }
+  .badge-cancelado { background: rgba(255,92,106,0.1); color: var(--red); }
+  .badge-cancelado::before { background: var(--red); }
+
+  .actions { display: flex; gap: 6px; align-items: center; }
+
+  .btn-icon {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 5px 8px;
+    font-size: 12px;
+    transition: all 0.12s;
+  }
+
+  .btn-icon:hover { color: var(--text); border-color: var(--muted); }
+
+  .link-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .mail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid rgba(200,242,90,0.35);
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .mail-link:hover {
+    color: #0f0e13;
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .mail-link.secondary {
+    color: var(--blue);
+    border-color: rgba(72,191,227,0.35);
+  }
+
+  .mail-link.secondary:hover {
+    color: #0f0e13;
+    background: var(--blue);
+    border-color: var(--blue);
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 540px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.2s;
+  }
+
+  .modal-overlay.open .modal {
+    transform: translateY(0);
+  }
+
+  .modal-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  .modal-close:hover { color: var(--text); }
+
+  /* FORM */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-grid.single { grid-template-columns: 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  input[type="text"], input[type="number"], input[type="date"], textarea {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 10px 13px;
+    outline: none;
+    transition: border-color 0.12s;
+    width: 100%;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--accent2);
+  }
+
+  textarea { resize: vertical; min-height: 70px; }
+
+  .form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* PRODUCTS IN ORDER */
+  .products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .product-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+  }
+
+  .product-row input { flex: 1; }
+
+  .product-row .price-in { width: 90px; flex-shrink: 0; }
+
+  .btn-rm {
+    background: none;
+    border: none;
+    color: var(--red);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px 6px;
+    line-height: 1;
+  }
+
+  .btn-add-product {
+    background: none;
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.12s;
+  }
+
+  .btn-add-product:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* PRINT SHEET */
+  .print-btn {
+    background: var(--accent2);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+
+  .print-btn:hover { background: #9b7eff; }
+
+  /* DETAIL VIEW */
+  .detail-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .detail-row:last-child { border-bottom: none; }
+  .detail-label { color: var(--muted); }
+
+  .platform-badge {
+    display: inline-flex;
+    align-items: center;
+    min-width: 76px;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+  }
+
+  .platform-vinted {
+    color: #07575b;
+    background: #c8f4ef;
+    border-color: #78d5cb;
+  }
+
+  .platform-wallapop {
+    color: #5b4300;
+    background: #ffe08a;
+    border-color: #e0b83f;
+  }
+
+  .platform-manual {
+    color: #374151;
+    background: #e5e7eb;
+    border-color: #cbd5e1;
+  }
+
+  .product-tag {
+    display: inline-block;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    margin: 3px;
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+  .empty-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  /* DASHBOARD */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .kpi-card.k1::before { background: var(--accent); }
+  .kpi-card.k2::before { background: var(--accent2); }
+  .kpi-card.k3::before { background: var(--blue); }
+  .kpi-card.k4::before { background: var(--yellow); }
+  .kpi-card.k5::before { background: var(--green); }
+
+  .kpi-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .kpi-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* STATUS SELECTOR */
+  .status-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 4px 28px 4px 10px;
+    cursor: pointer;
+    outline: none;
+    color: var(--text);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%237a748f'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+  }
+
+  /* PRINT */
+  @media print {
+    .no-print { display: none !important; }
+    body { background: #fff; color: #000; }
+    .print-area {
+      font-family: monospace;
+      font-size: 12px;
+    }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  /* NOTIFICATION */
+  .notif {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    font-size: 13px;
+    z-index: 999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.25s;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .notif.show { transform: translateY(0); opacity: 1; }
+
+  .tag-category {
+    font-size: 10px;
+    background: rgba(124,92,252,0.15);
+    color: var(--accent2);
+    border-radius: 4px;
+    padding: 2px 7px;
+    white-space: nowrap;
+  }
+
+  .notes-cell {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .stock-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .stock-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .stock-card.is-clickable {
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s, background 0.2s;
+  }
+
+  .stock-card.is-clickable:hover,
+  .stock-card.active {
+    border-color: var(--accent);
+    background: var(--surface2);
+    transform: translateY(-1px);
+  }
+
+  .stock-row-clickable {
+    cursor: pointer;
+  }
+
+  .stock-row-clickable:hover {
+    background: rgba(124,92,252,0.08);
+  }
+
+  .stock-detail-panel {
+    margin-top: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+  }
+
+  .stock-detail-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .stock-detail-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+  }
+
+  .stock-detail-sub {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .stock-detail-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .stock-detail-item {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    background: rgba(255,255,255,0.02);
+  }
+
+  .stock-detail-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .stock-card .stock-label {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    font-weight: 700;
+  }
+
+  .stock-card .stock-qty {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 6px;
+  }
+
+  .plan-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 18px 0;
+  }
+
+  .plan-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .plan-step strong {
+    display: block;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  .plan-step p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .label-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .route-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(72,191,227,0.12);
+    color: var(--blue);
+    border: 1px solid rgba(72,191,227,0.28);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* Mobile/GitHub Pages export responsive layout */
+  @media (max-width: 900px) {
+    body {
+      overflow-x: hidden;
+    }
+
+    header {
+      position: static;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .logo {
+      font-size: 20px;
+      line-height: 1.15;
+    }
+
+    .header-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .stat-pill {
+      min-width: 0;
+      justify-content: space-between;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-2);
+      padding: 8px 10px;
+    }
+
+    header .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .app {
+      display: block;
+      height: auto;
+      min-height: 0;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      z-index: 80;
+      width: 100%;
+      border-right: 0;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding: 10px;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .nav-section {
+      grid-column: 1 / -1;
+      padding: 4px 4px 0;
+    }
+
+    .nav-item {
+      min-height: 44px;
+      padding: 10px;
+      font-size: 13px;
+      border-radius: 8px;
+    }
+
+    .nav-item span:last-child {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .main {
+      padding: 16px;
+      overflow: visible;
+    }
+
+    .page-title {
+      font-size: 30px;
+      line-height: 1.05;
+      overflow-wrap: anywhere;
+    }
+
+    .page-sub {
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .cards-grid,
+    .stock-summary-grid,
+    .plan-steps,
+    .tracking-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .toolbar,
+    .filters-row,
+    .detail-actions,
+    .plan-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .toolbar .btn,
+    .detail-actions .btn,
+    .plan-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 8px;
+    }
+
+    table {
+      min-width: 820px;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+    }
+
+    .modal {
+      width: calc(100vw - 24px);
+      max-height: calc(100vh - 24px);
+      overflow: auto;
+    }
+
+    .form-grid,
+    .product-row {
+      grid-template-columns: 1fr;
+    }
+
+    .stock-detail-head {
+      display: block;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .header-stats,
+    .sidebar {
+      grid-template-columns: 1fr;
+    }
+
+    .page-title {
+      font-size: 26px;
+    }
+
+    .kpi-value,
+    .stock-summary-value {
+      font-size: 30px;
+    }
+
+    table {
+      min-width: 760px;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<header class="no-print">
+  <div class="logo">Vinted<span>ERP</span></div>
+  <div class="header-stats">
+    <div class="stat-pill">
+      <span class="val" id="hdr-total">0</span>
+      <span class="lbl">Encomendas</span>
+    </div>
+    <div class="stat-pill">
+      <span class="val" id="hdr-revenue">0€</span>
+      <span class="lbl">Receita</span>
+    </div>
+    <div class="stat-pill">
+      <span class="val" id="hdr-pending">0</span>
+      <span class="lbl">Pendentes</span>
+    </div>
+    <div class="stat-pill">
+      <span class="val" id="hdr-to-ship-money">0EUR</span>
+      <span class="lbl">Por enviar</span>
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="openModal()">+ Nova Encomenda</button>
+</header>
+
+<div class="app">
+  <nav class="sidebar no-print">
+    <div class="nav-section">Menu</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <span class="nav-icon">DB</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('orders', this)">
+      <span class="nav-icon">EN</span> Encomendas
+    </div>
+    <div class="nav-item" onclick="showPage('buyers', this)">
+      <span class="nav-icon">CP</span> Compradores
+    </div>
+    <div class="nav-item" onclick="showPage('stock', this)">
+      <span class="nav-icon">ST</span> Stock a avaliar
+    </div>
+    <div class="nav-item" onclick="showPage('unpaid-stock', this)">
+      <span class="nav-icon">PN</span> Pendentes stock
+    </div>
+    <div class="nav-item" onclick="showPage('shipping-plan', this)">
+      <span class="nav-icon">PE</span> Plano de envios
+    </div>
+    <div class="nav-item" onclick="showPage('tracking', this)">
+      <span class="nav-icon">TR</span> Tracking
+    </div>
+    <div class="nav-item" onclick="showPage('correios', this)">
+      <span class="nav-icon">FC</span> Folha Correios
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">VisÃ£o geral das tuas vendas por plataforma</div>
+
+      <div class="cards-grid" id="kpi-grid"></div>
+
+      <div class="page-title" style="font-size:18px; margin-bottom:16px;">Encomendas Recentes</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable" onclick="setSort('dashboard','id')">#ID <span class="sort-arrow" data-sort="dashboard:id"></span></th>
+              <th class="sortable" onclick="setSort('dashboard','platform')">Plataforma <span class="sort-arrow" data-sort="dashboard:platform"></span></th>
+              <th class="sortable" onclick="setSort('dashboard','buyer')">Comprador <span class="sort-arrow" data-sort="dashboard:buyer"></span></th>
+              <th class="sortable" onclick="setSort('dashboard','products')">Produtos <span class="sort-arrow" data-sort="dashboard:products"></span></th>
+              <th class="sortable" onclick="setSort('dashboard','total')">Total <span class="sort-arrow" data-sort="dashboard:total"></span></th>
+              <th class="sortable" onclick="setSort('dashboard','status')">Estado <span class="sort-arrow" data-sort="dashboard:status"></span></th>
+              <th class="sortable" onclick="setSort('dashboard','date')">Data <span class="sort-arrow" data-sort="dashboard:date"></span></th>
+              <th>Gmail</th>
+            </tr>
+          </thead>
+          <tbody id="dash-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="page" id="page-orders">
+      <div class="page-title">Encomendas</div>
+      <div class="page-sub">Todas as encomendas e o seu estado</div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <span>ðŸ”</span>
+          <input type="text" id="search-orders" placeholder="Pesquisar comprador, produto..." oninput="renderOrders()">
+        </div>
+        <select id="filter-status" onchange="renderOrders()">
+          <option value="">Todos os estados</option>
+          <option value="pendente">Pendente</option>
+          <option value="pago">Pago</option>
+          <option value="enviado">Enviado</option>
+          <option value="entregue">Entregue</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModal()">+ Nova</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable" onclick="setSort('orders','id')">#ID <span class="sort-arrow" data-sort="orders:id"></span></th>
+              <th class="sortable" onclick="setSort('orders','platform')">Plataforma <span class="sort-arrow" data-sort="orders:platform"></span></th>
+              <th class="sortable" onclick="setSort('orders','buyer')">Comprador <span class="sort-arrow" data-sort="orders:buyer"></span></th>
+              <th class="sortable" onclick="setSort('orders','username')">Username <span class="sort-arrow" data-sort="orders:username"></span></th>
+              <th class="sortable" onclick="setSort('orders','products')">Produtos <span class="sort-arrow" data-sort="orders:products"></span></th>
+              <th class="sortable" onclick="setSort('orders','total')">Total <span class="sort-arrow" data-sort="orders:total"></span></th>
+              <th class="sortable" onclick="setSort('orders','status')">Estado <span class="sort-arrow" data-sort="orders:status"></span></th>
+              <th class="sortable" onclick="setSort('orders','date')">Data <span class="sort-arrow" data-sort="orders:date"></span></th>
+              <th>Gmail</th>
+              <th class="sortable" onclick="setSort('orders','notes')">Notas <span class="sort-arrow" data-sort="orders:notes"></span></th>
+              <th>AÃ§Ãµes</th>
+            </tr>
+          </thead>
+          <tbody id="orders-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BUYERS -->
+    <div class="page" id="page-buyers">
+      <div class="page-title">Compradores</div>
+      <div class="page-sub">HistÃ³rico de compradores e encomendas</div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <span>ðŸ”</span>
+          <input type="text" id="search-buyers" placeholder="Pesquisar comprador..." oninput="renderBuyers()">
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable" onclick="setSort('buyers','buyer')">Comprador <span class="sort-arrow" data-sort="buyers:buyer"></span></th>
+              <th class="sortable" onclick="setSort('buyers','username')">Username Vinted <span class="sort-arrow" data-sort="buyers:username"></span></th>
+              <th class="sortable" onclick="setSort('buyers','count')">Encomendas <span class="sort-arrow" data-sort="buyers:count"></span></th>
+              <th class="sortable" onclick="setSort('buyers','total')">Total Gasto <span class="sort-arrow" data-sort="buyers:total"></span></th>
+              <th class="sortable" onclick="setSort('buyers','last')">Ãšltimo Pedido <span class="sort-arrow" data-sort="buyers:last"></span></th>
+              <th>Gmail</th>
+              <th>AÃ§Ãµes</th>
+            </tr>
+          </thead>
+          <tbody id="buyers-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STOCK -->
+    <div class="page" id="page-stock">
+      <div class="page-title">Stock a avaliar</div>
+      <div class="page-sub">Quantidades de pulseiras e colares em encomendas ainda nao enviadas</div>
+
+      <div class="stock-summary-grid" id="stock-summary"></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Artigo</th>
+              <th>Quantidade</th>
+              <th>Encomendas</th>
+              <th>Compradores</th>
+              <th>Detalhe</th>
+            </tr>
+          </thead>
+          <tbody id="stock-table"></tbody>
+        </table>
+      </div>
+
+      <div class="stock-detail-panel" id="stock-detail"></div>
+    </div>
+
+    <!-- UNPAID STOCK -->
+    <div class="page" id="page-unpaid-stock">
+      <div class="page-title">Pendentes stock</div>
+      <div class="page-sub">Encomendas ainda nao pagas que podem exigir reserva ou avaliacao de stock</div>
+
+      <div class="cards-grid" id="unpaid-stock-kpis"></div>
+      <div class="stock-summary-grid" id="unpaid-stock-summary"></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#ID</th>
+              <th>Comprador</th>
+              <th>Plataforma</th>
+              <th>Valor potencial</th>
+              <th>Artigos a avaliar</th>
+              <th>Nota / proximo passo</th>
+            </tr>
+          </thead>
+          <tbody id="unpaid-stock-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SHIPPING PLAN -->
+    <div class="page" id="page-shipping-plan">
+      <div class="page-title">Plano de envios</div>
+      <div class="page-sub">Afazeres, encomendas pagas por enviar e etiquetas descarregaveis</div>
+
+      <div class="cards-grid" id="shipping-plan-kpis"></div>
+
+      <div class="plan-steps">
+        <div class="plan-step">
+          <strong>1. Separar artigos</strong>
+          <p>Usa esta pagina para confirmar comprador, artigo e plataforma antes de embalar.</p>
+        </div>
+        <div class="plan-step">
+          <strong>2. Etiquetas</strong>
+          <p>Descarrega os PDFs quando existirem. Se nao houver PDF, abre as instrucoes/link da plataforma.</p>
+        </div>
+        <div class="plan-step">
+          <strong>3. Entrega</strong>
+          <p>Leva por grupos de transportadora/ponto de entrega e muda o estado para enviado depois.</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#ID</th>
+              <th>Plataforma</th>
+              <th>Comprador</th>
+              <th>Produtos</th>
+              <th>Total</th>
+              <th>Envio</th>
+              <th>Etiqueta / instrucoes</th>
+              <th>Notas</th>
+            </tr>
+          </thead>
+          <tbody id="shipping-plan-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TRACKING -->
+    <div class="page" id="page-tracking">
+      <div class="page-title">Tracking</div>
+      <div class="page-sub">Acompanhamento das encomendas ja enviadas com informacao recolhida dos emails Vinted</div>
+
+      <div class="cards-grid" id="tracking-kpis"></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#ID</th>
+              <th>Comprador</th>
+              <th>Plataforma</th>
+              <th>Estado ERP</th>
+              <th>Tracking</th>
+              <th>Estado Vinted</th>
+              <th>Entrega prevista</th>
+              <th>Produto</th>
+              <th>Origem</th>
+            </tr>
+          </thead>
+          <tbody id="tracking-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CORREIOS -->
+    <div class="page" id="page-correios">
+      <div class="page-title">Folha Correios</div>
+      <div class="page-sub">Encomendas prontas a enviar â€” imprime e leva para os correios</div>
+
+      <div class="toolbar no-print">
+        <select id="filter-correios" onchange="renderCorreios()">
+          <option value="pago">Pagas (a enviar)</option>
+          <option value="enviado">JÃ¡ enviadas</option>
+          <option value="">Todas</option>
+        </select>
+        <button class="btn btn-primary" onclick="window.print()">ðŸ–¨ï¸ Imprimir</button>
+      </div>
+
+      <div id="correios-list"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modal-heading">Nova Encomenda</span>
+      <button class="modal-close" onclick="closeModal()">âœ•</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Nome do Comprador</label>
+        <input type="text" id="f-buyer" placeholder="Ex: JoÃ£o Silva">
+      </div>
+      <div class="field">
+        <label>Username Vinted</label>
+        <input type="text" id="f-username" placeholder="@username">
+      </div>
+      <div class="field">
+        <label>Data</label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <select id="f-status">
+          <option value="pendente">Pendente</option>
+          <option value="pago">Pago</option>
+          <option value="enviado">Enviado</option>
+          <option value="entregue">Entregue</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </div>
+
+      <div class="field full">
+        <label>Morada (para correios)</label>
+        <input type="text" id="f-address" placeholder="Rua, nÂº, CP, Cidade">
+      </div>
+
+      <div class="field full">
+        <label>Produtos</label>
+        <div class="products-list" id="products-inputs"></div>
+        <button class="btn-add-product" onclick="addProductRow()">+ Adicionar produto</button>
+      </div>
+
+      <div class="field full">
+        <label>Notas</label>
+        <textarea id="f-notes" placeholder="ObservaÃ§Ãµes, tracking, referÃªncias..."></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:14px; border-top:1px solid var(--border)">
+      <div style="color:var(--muted); font-size:12px;">Total: <span id="f-total-display" style="color:var(--accent); font-family:'Space Grotesk',sans-serif; font-weight:700;">0.00€</span></div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveOrder()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<script>
+// â”€â”€â”€ DATA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const STORAGE_KEY = 'vinted_orders_reais_2026_05_06';
+const DATASET_VERSION = 'marketplace-online-mobile-export-2026-05-07-v1';
+let orders = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+let editingId = null;
+let productCount = 0;
+const sortState = {
+  dashboard: { key: 'date', dir: 'desc' },
+  orders: { key: 'date', dir: 'desc' },
+  buyers: { key: 'last', dir: 'desc' }
+};
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+  localStorage.setItem(STORAGE_KEY + '_version', DATASET_VERSION);
+}
+
+function setSort(table, key) {
+  const current = sortState[table] || { key, dir: 'asc' };
+  sortState[table] = {
+    key,
+    dir: current.key === key && current.dir === 'asc' ? 'desc' : 'asc'
+  };
+
+  if (table === 'dashboard') renderDashboard();
+  if (table === 'orders') renderOrders();
+  if (table === 'buyers') renderBuyers();
+}
+
+function updateSortIndicators(table) {
+  document.querySelectorAll(`[data-sort^="${table}:"]`).forEach(el => {
+    const key = el.dataset.sort.split(':')[1];
+    el.textContent = sortState[table]?.key === key
+      ? (sortState[table].dir === 'asc' ? '▲' : '▼')
+      : '';
+  });
+}
+
+function productNames(order) {
+  return (order.products || []).map(p => p.name).join(' ');
+}
+
+function platformName(order) {
+  if (order.platform) return order.platform;
+  if (order.payment) return order.payment;
+  if ((order.id || '').startsWith('WLP-')) return 'Wallapop';
+  if ((order.id || '').startsWith('VTD-')) return 'Vinted';
+  return 'Manual';
+}
+
+function platformBadgeHtml(order) {
+  const platform = platformName(order);
+  const cls = platform.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  return `<span class="platform-badge platform-${cls}">${platform}</span>`;
+}
+
+function gmailSearchUrl(query) {
+  return 'https://mail.google.com/mail/u/0/#search/' + encodeURIComponent(query);
+}
+
+function gmailMessageUrl(id) {
+  return 'https://mail.google.com/mail/u/0/#all/' + id;
+}
+
+function orderGmailQuery(order) {
+  if (order.gmail?.search) return order.gmail.search;
+  const username = (order.buyer || '').replace(/^@/, '');
+  const product = productNames(order).split(' - ')[0].trim();
+  return `from:(no-reply@vinted.pt) (${username} OR "${product}")`;
+}
+
+function trackingUrl(order) {
+  if (!order.tracking) return '';
+  return 'https://t.17track.net/pt#nums=' + encodeURIComponent(order.tracking);
+}
+
+function trackingLinkHtml(order) {
+  if (!order.tracking) return '<span style="color:var(--muted);">Sem codigo</span>';
+  return `<a class="route-pill" target="_blank" rel="noopener" href="${trackingUrl(order)}" title="Abrir tracking em tempo real">${order.tracking}</a>`;
+}
+
+function labelActionHtml(order) {
+  const gmail = order.gmail || {};
+  if (gmail.labelFile) {
+    return `<div class="label-actions"><a class="mail-link secondary" href="${gmail.labelFile}" download>Descarregar PDF</a><a class="mail-link" target="_blank" rel="noopener" href="${gmailMessageUrl(gmail.labelEmailId)}">Email etiqueta</a></div>`;
+  }
+  if (gmail.labelUrl) {
+    return `<div class="label-actions"><a class="mail-link secondary" target="_blank" rel="noopener" href="${gmail.labelUrl}">Abrir instrucoes</a><a class="mail-link" target="_blank" rel="noopener" href="${gmailMessageUrl(gmail.labelEmailId)}">Email</a></div>`;
+  }
+  if (gmail.labelEmailId) {
+    return `<div class="label-actions"><a class="mail-link secondary" target="_blank" rel="noopener" href="${gmailMessageUrl(gmail.labelEmailId)}">Abrir etiqueta</a></div>`;
+  }
+  return '<span style="color:var(--muted);">Sem etiqueta ainda</span>';
+}
+
+function gmailLinksHtml(order) {
+  const gmail = order.gmail || {};
+  const links = [];
+  links.push(`<a class="mail-link" target="_blank" rel="noopener" href="${gmailSearchUrl(orderGmailQuery(order))}" title="Abrir emails ligados no Gmail">Gmail</a>`);
+  if (gmail.labelFile) {
+    links.push(`<a class="mail-link secondary" href="${gmail.labelFile}" download title="Descarregar PDF da etiqueta">Etiqueta</a>`);
+  } else if (gmail.labelUrl) {
+    links.push(`<a class="mail-link secondary" target="_blank" rel="noopener" href="${gmail.labelUrl}" title="Abrir etiqueta ou instrucoes de envio">Etiqueta</a>`);
+  } else if (gmail.labelEmailId) {
+    links.push(`<a class="mail-link secondary" target="_blank" rel="noopener" href="${gmailMessageUrl(gmail.labelEmailId)}" title="Abrir email da etiqueta no Gmail">Etiqueta</a>`);
+  }
+  if (gmail.saleEmailId) {
+    links.push(`<a class="mail-link secondary" target="_blank" rel="noopener" href="${gmailMessageUrl(gmail.saleEmailId)}" title="Abrir venda no Gmail">Venda</a>`);
+  }
+  return `<div class="link-stack">${links.join('')}</div>`;
+}
+
+function orderValue(order, key) {
+  const map = {
+    id: order.id,
+    buyer: order.buyer,
+    username: order.username || '',
+    platform: platformName(order),
+    products: productNames(order),
+    total: order.total,
+    status: order.status,
+    date: order.date,
+    notes: order.notes || ''
+  };
+  return map[key] ?? '';
+}
+
+function compareValues(a, b, dir) {
+  const av = a ?? '';
+  const bv = b ?? '';
+  const result = typeof av === 'number' && typeof bv === 'number'
+    ? av - bv
+    : String(av).localeCompare(String(bv), 'pt', { numeric: true, sensitivity: 'base' });
+  return dir === 'asc' ? result : -result;
+}
+
+function sortOrders(list, table) {
+  const state = sortState[table] || { key: 'date', dir: 'desc' };
+  return [...list].sort((a, b) => compareValues(orderValue(a, state.key), orderValue(b, state.key), state.dir));
+}
+
+function genId() {
+  return 'VTD-' + String(Date.now()).slice(-5);
+}
+
+// â”€â”€â”€ NAVIGATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'orders') renderOrders();
+  if (name === 'buyers') renderBuyers();
+  if (name === 'stock') renderStockReview();
+  if (name === 'unpaid-stock') renderUnpaidStock();
+  if (name === 'shipping-plan') renderShippingPlan();
+  if (name === 'tracking') renderTracking();
+  if (name === 'correios') renderCorreios();
+}
+
+// â”€â”€â”€ MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function openModal(id) {
+  editingId = id || null;
+  productCount = 0;
+  document.getElementById('products-inputs').innerHTML = '';
+
+  if (id) {
+    const o = orders.find(x => x.id === id);
+    document.getElementById('modal-heading').textContent = 'Editar Encomenda';
+    document.getElementById('f-buyer').value = o.buyer;
+    document.getElementById('f-username').value = o.username || '';
+    document.getElementById('f-date').value = o.date;
+    document.getElementById('f-status').value = o.status;
+    document.getElementById('f-address').value = o.address || '';
+    document.getElementById('f-notes').value = o.notes || '';
+    o.products.forEach(p => addProductRow(p.name, p.price));
+  } else {
+    document.getElementById('modal-heading').textContent = 'Nova Encomenda';
+    document.getElementById('f-buyer').value = '';
+    document.getElementById('f-username').value = '';
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('f-status').value = 'pendente';
+    document.getElementById('f-address').value = '';
+    document.getElementById('f-notes').value = '';
+    addProductRow();
+  }
+
+  updateTotalDisplay();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function addProductRow(name = '', price = '') {
+  productCount++;
+  const id = 'pr-' + productCount;
+  const div = document.createElement('div');
+  div.className = 'product-row';
+  div.id = id;
+  div.innerHTML = `
+    <input type="text" placeholder="Nome do produto" value="${name}" class="prod-name" oninput="updateTotalDisplay()">
+    <input type="number" placeholder="€ PreÃ§o" value="${price}" class="price-in prod-price" step="0.01" min="0" oninput="updateTotalDisplay()">
+    <button class="btn-rm" onclick="document.getElementById('${id}').remove(); updateTotalDisplay()">âœ•</button>
+  `;
+  document.getElementById('products-inputs').appendChild(div);
+}
+
+function updateTotalDisplay() {
+  const total = getProductsFromForm().reduce((s, p) => s + p.price, 0);
+  document.getElementById('f-total-display').textContent = total.toFixed(2) + '€';
+}
+
+function getProductsFromForm() {
+  const rows = document.querySelectorAll('.product-row');
+  const products = [];
+  rows.forEach(r => {
+    const name = r.querySelector('.prod-name').value.trim();
+    const price = parseFloat(r.querySelector('.prod-price').value) || 0;
+    if (name) products.push({ name, price });
+  });
+  return products;
+}
+
+function saveOrder() {
+  const buyer = document.getElementById('f-buyer').value.trim();
+  if (!buyer) { notify('âš ï¸ Nome do comprador obrigatÃ³rio'); return; }
+
+  const products = getProductsFromForm();
+  if (!products.length) { notify('âš ï¸ Adiciona pelo menos um produto'); return; }
+
+  const total = products.reduce((s, p) => s + p.price, 0);
+  const existingOrder = editingId ? orders.find(x => x.id === editingId) : null;
+
+  const order = {
+    id: editingId || genId(),
+    buyer,
+    username: document.getElementById('f-username').value.trim(),
+    platform: existingOrder?.platform || existingOrder?.payment || 'Manual',
+    payment: existingOrder?.payment || existingOrder?.platform || 'Manual',
+    date: document.getElementById('f-date').value,
+    status: document.getElementById('f-status').value,
+    address: document.getElementById('f-address').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+    products,
+    total,
+    gmail: existingOrder?.gmail
+  };
+
+  if (editingId) {
+    const idx = orders.findIndex(x => x.id === editingId);
+    orders[idx] = order;
+    notify('âœ“ Encomenda atualizada');
+  } else {
+    orders.unshift(order);
+    notify('âœ“ Encomenda criada');
+  }
+
+  save();
+  closeModal();
+  refreshAll();
+}
+
+function deleteOrder(id) {
+  if (!confirm('Apagar esta encomenda?')) return;
+  orders = orders.filter(x => x.id !== id);
+  save();
+  refreshAll();
+  notify('ðŸ—‘ï¸ Encomenda apagada');
+}
+
+function changeStatus(id, val) {
+  const o = orders.find(x => x.id === id);
+  if (o) { o.status = val; save(); refreshAll(); }
+}
+
+// â”€â”€â”€ RENDER HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function badgeHtml(status) {
+  return `<span class="badge badge-${status}">${status}</span>`;
+}
+
+function urgencyRowClass(order) {
+  if (order.status === 'pago') return 'row-urgency-pago';
+  if (order.status === 'pendente') return 'row-urgency-pendente';
+  return '';
+}
+
+function urgencyLabelHtml(order) {
+  if (order.status === 'pago') return '<span class="urgency-label ship">Por enviar</span>';
+  if (order.status === 'pendente') return '<span class="urgency-label wait">A aguardar</span>';
+  return '';
+}
+
+function statusSelect(id, current) {
+  const opts = ['pendente','pago','enviado','entregue','cancelado'];
+  return `<select class="status-select" onchange="changeStatus('${id}', this.value)">
+    ${opts.map(s => `<option value="${s}" ${s===current?'selected':''}>${s}</option>`).join('')}
+  </select>`;
+}
+
+function refreshAll() {
+  updateHeader();
+  const active = document.querySelector('.page.active').id.replace('page-','');
+  if (active === 'dashboard') renderDashboard();
+  if (active === 'orders') renderOrders();
+  if (active === 'buyers') renderBuyers();
+  if (active === 'stock') renderStockReview();
+  if (active === 'unpaid-stock') renderUnpaidStock();
+  if (active === 'shipping-plan') renderShippingPlan();
+  if (active === 'tracking') renderTracking();
+  if (active === 'correios') renderCorreios();
+}
+
+function updateHeader() {
+  const revenue = orders.filter(o => o.status !== 'cancelado').reduce((s,o) => s + o.total, 0);
+  const pending = orders.filter(o => o.status === 'pendente').length;
+  const toShipMoney = orders.filter(o => o.status === 'pago').reduce((s,o) => s + o.total, 0);
+  document.getElementById('hdr-total').textContent = orders.length;
+  document.getElementById('hdr-revenue').textContent = revenue.toFixed(0) + '€';
+  document.getElementById('hdr-pending').textContent = pending;
+  const toShipEl = document.getElementById('hdr-to-ship-money');
+  if (toShipEl) toShipEl.textContent = toShipMoney.toFixed(0) + '€';
+}
+
+// â”€â”€â”€ DASHBOARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function renderDashboard() {
+  updateHeader();
+  const active = orders.filter(o => o.status !== 'cancelado');
+  const revenue = active.reduce((s,o) => s + o.total, 0);
+  const envios = orders.filter(o => o.status === 'enviado').length;
+  const entregues = orders.filter(o => o.status === 'entregue').length;
+  const pendentes = orders.filter(o => o.status === 'pendente').length;
+  const pagos = orders.filter(o => o.status === 'pago').length;
+  const valorPorEnviar = orders.filter(o => o.status === 'pago').reduce((s,o) => s + o.total, 0);
+
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi-card k1">
+      <div class="kpi-label">Total Encomendas</div>
+      <div class="kpi-val">${orders.length}</div>
+    </div>
+    <div class="kpi-card k2">
+      <div class="kpi-label">Receita Total</div>
+      <div class="kpi-val">${revenue.toFixed(2)}€</div>
+    </div>
+    <div class="kpi-card k3">
+      <div class="kpi-label">A Enviar (Pago)</div>
+      <div class="kpi-val">${pagos}</div>
+    </div>
+    <div class="kpi-card k3">
+      <div class="kpi-label">Valor Por Enviar</div>
+      <div class="kpi-val">${valorPorEnviar.toFixed(2)}€</div>
+    </div>
+    <div class="kpi-card k4">
+      <div class="kpi-label">Pendente Pagamento</div>
+      <div class="kpi-val">${pendentes}</div>
+    </div>
+    <div class="kpi-card k5">
+      <div class="kpi-label">Entregues</div>
+      <div class="kpi-val">${entregues}</div>
+    </div>
+  `;
+
+  const recent = sortOrders(orders, 'dashboard').slice(0, 8);
+  const tb = document.getElementById('dash-table');
+  updateSortIndicators('dashboard');
+  if (!recent.length) {
+    tb.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon">ðŸ“­</div><div class="empty-text">Sem encomendas ainda</div><p>Clica em + Nova Encomenda para comeÃ§ar</p></div></td></tr>`;
+    return;
+  }
+  tb.innerHTML = recent.map(o => `
+    <tr class="${urgencyRowClass(o)}">
+      <td class="order-id">${o.id}</td>
+      <td>${platformBadgeHtml(o)}</td>
+      <td><div class="buyer-name">${o.buyer}</div>${o.username ? `<div style="color:var(--muted);font-size:11px;">${o.username}</div>` : ''}</td>
+      <td>${o.products.map(p => `<span class="product-tag">${p.name}</span>`).join('')}</td>
+      <td class="price">${o.total.toFixed(2)}€</td>
+      <td>${badgeHtml(o.status)}${urgencyLabelHtml(o)}</td>
+      <td style="color:var(--muted)">${o.date}</td>
+      <td>${gmailLinksHtml(o)}</td>
+    </tr>
+  `).join('');
+}
+
+// â”€â”€â”€ ORDERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function renderOrders() {
+  const q = (document.getElementById('search-orders')?.value || '').toLowerCase();
+  const fs = document.getElementById('filter-status')?.value || '';
+
+  let filtered = orders.filter(o => {
+    const matchQ = !q || o.buyer.toLowerCase().includes(q) ||
+      platformName(o).toLowerCase().includes(q) ||
+      (o.username||'').toLowerCase().includes(q) ||
+      o.products.some(p => p.name.toLowerCase().includes(q));
+    const matchS = !fs || o.status === fs;
+    return matchQ && matchS;
+  });
+  filtered = sortOrders(filtered, 'orders');
+
+  const tb = document.getElementById('orders-table');
+  updateSortIndicators('orders');
+  if (!filtered.length) {
+    tb.innerHTML = `<tr><td colspan="11"><div class="empty"><div class="empty-icon">ðŸ”</div><div class="empty-text">Nenhuma encomenda encontrada</div></div></td></tr>`;
+    return;
+  }
+
+  tb.innerHTML = filtered.map(o => `
+    <tr class="${urgencyRowClass(o)}">
+      <td class="order-id">${o.id}</td>
+      <td>${platformBadgeHtml(o)}</td>
+      <td>
+        <div class="buyer-name">${o.buyer}</div>
+      </td>
+      <td style="color:var(--muted)">${o.username||'â€”'}</td>
+      <td>${o.products.map(p => `<span class="product-tag">${p.name} <span style="color:var(--accent)">${p.price.toFixed(2)}€</span></span>`).join('')}</td>
+      <td class="price">${o.total.toFixed(2)}€</td>
+      <td>${statusSelect(o.id, o.status)}${urgencyLabelHtml(o)}</td>
+      <td style="color:var(--muted)">${o.date}</td>
+      <td>${gmailLinksHtml(o)}</td>
+      <td class="notes-cell" title="${o.notes||''}">${o.notes||'â€”'}</td>
+      <td class="actions">
+        <button class="btn-icon" title="Editar" onclick="openModal('${o.id}')">âœï¸</button>
+        <button class="btn-icon" title="Apagar" onclick="deleteOrder('${o.id}')">ðŸ—‘ï¸</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// â”€â”€â”€ BUYERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function renderBuyers() {
+  const q = (document.getElementById('search-buyers')?.value || '').toLowerCase();
+
+  // Group orders by buyer
+  const map = {};
+  orders.forEach(o => {
+    const key = o.buyer.toLowerCase();
+    if (!map[key]) map[key] = { buyer: o.buyer, username: o.username||'', orders: [] };
+    map[key].orders.push(o);
+    if (o.username && !map[key].username) map[key].username = o.username;
+  });
+
+  let buyers = Object.values(map)
+    .map(b => {
+      const total = b.orders.filter(o => o.status !== 'cancelado').reduce((s,o) => s + o.total, 0);
+      const last = [...b.orders].sort((a,z) => z.date.localeCompare(a.date))[0];
+      return { ...b, count: b.orders.length, total, lastDate: last?.date || '' };
+    })
+    .filter(b => !q || b.buyer.toLowerCase().includes(q) || b.username.toLowerCase().includes(q));
+
+  const buyerSort = sortState.buyers || { key: 'last', dir: 'desc' };
+  buyers = [...buyers].sort((a, b) => {
+    const aVal = buyerSort.key === 'count' ? a.count :
+      buyerSort.key === 'total' ? a.total :
+      buyerSort.key === 'last' ? a.lastDate :
+      a[buyerSort.key] || '';
+    const bVal = buyerSort.key === 'count' ? b.count :
+      buyerSort.key === 'total' ? b.total :
+      buyerSort.key === 'last' ? b.lastDate :
+      b[buyerSort.key] || '';
+    return compareValues(aVal, bVal, buyerSort.dir);
+  });
+
+  const tb = document.getElementById('buyers-table');
+  updateSortIndicators('buyers');
+  if (!buyers.length) {
+    tb.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-icon">ðŸ‘¤</div><div class="empty-text">Nenhum comprador ainda</div></div></td></tr>`;
+    return;
+  }
+
+  tb.innerHTML = buyers.map(b => {
+    return `<tr>
+      <td><div class="buyer-name">${b.buyer}</div></td>
+      <td style="color:var(--muted)">${b.username||'â€”'}</td>
+      <td>${b.count} encomenda${b.count !== 1 ? 's' : ''}</td>
+      <td class="price">${b.total.toFixed(2)}€</td>
+      <td style="color:var(--muted)">${b.lastDate}</td>
+      <td>${gmailLinksHtml(b.orders[0])}</td>
+      <td>
+        <button class="btn-icon" onclick="filterByBuyer('${b.buyer}')">Ver pedidos</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterByBuyer(buyer) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-item')[1].classList.add('active');
+  showPage('orders', null);
+  document.querySelectorAll('.nav-item')[1].classList.add('active');
+  document.getElementById('search-orders').value = buyer;
+  renderOrders();
+}
+
+// STOCK
+function stockQty(product) {
+  const name = normalizeText(product.name || '');
+  const explicit = Number(product.qty || 0);
+  if (explicit > 1) return explicit;
+  const match = name.match(/(^|\s)(\d+)\s*x\s+/);
+  return match ? Number(match[2]) : 1;
+}
+
+function normalizeText(text) {
+  return String(text).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function stockItemsForProduct(product) {
+  const name = normalizeText(product.name || '');
+  const qty = stockQty(product);
+  const items = [];
+  if (name.includes('pulseira') && name.includes('82')) items.push({ key: 'Pulseiras 82g', qty });
+  if (name.includes('pulseira') && name.includes('35')) items.push({ key: 'Pulseiras 35g', qty });
+  if (name.includes('colar')) items.push({ key: 'Colares', qty });
+  if (!items.length && name.includes('pulseira')) items.push({ key: 'Pulseiras - outras', qty });
+  if (!items.length && name.includes('colar')) items.push({ key: 'Colares - outros', qty });
+  return items;
+}
+
+let selectedStockKey = '';
+
+function buildStockRows() {
+  const stockStatuses = ['pendente', 'pago'];
+  const relevant = orders.filter(o => stockStatuses.includes(o.status));
+  const buckets = {};
+
+  relevant.forEach(order => {
+    (order.products || []).forEach(product => {
+      stockItemsForProduct(product).forEach(item => {
+        if (!buckets[item.key]) {
+          buckets[item.key] = { key: item.key, qty: 0, orders: new Set(), buyers: new Set(), detail: [], entries: [] };
+        }
+        buckets[item.key].qty += item.qty;
+        buckets[item.key].orders.add(order.id);
+        buckets[item.key].buyers.add(order.buyer);
+        buckets[item.key].detail.push(`${order.id} - ${order.buyer}: ${item.qty}x ${product.name}`);
+        buckets[item.key].entries.push({ order, product, qty: item.qty });
+      });
+    });
+  });
+
+  const preferred = ['Pulseiras 82g', 'Pulseiras 35g', 'Colares', 'Pulseiras - outras', 'Colares - outros'];
+  return Object.values(buckets).sort((a, b) => {
+    const ai = preferred.indexOf(a.key);
+    const bi = preferred.indexOf(b.key);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi) || a.key.localeCompare(b.key, 'pt');
+  });
+}
+
+function selectStock(key) {
+  selectedStockKey = key;
+  renderStockReview();
+}
+
+function renderStockDetail(row) {
+  const el = document.getElementById('stock-detail');
+  if (!el) return;
+  if (!row) {
+    el.innerHTML = '<div class="stock-detail-title">Seleciona um artigo</div><div class="stock-detail-sub">Clica num cartão ou numa linha para veres o detalhe das encomendas.</div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="stock-detail-head">
+      <div>
+        <div class="stock-detail-title">${row.key}</div>
+        <div class="stock-detail-sub">${row.qty} unidade${row.qty !== 1 ? 's' : ''} em ${row.orders.size} encomenda${row.orders.size !== 1 ? 's' : ''} ainda nao enviada${row.orders.size !== 1 ? 's' : ''}</div>
+      </div>
+      <span class="product-tag">${Array.from(row.orders).join(', ')}</span>
+    </div>
+    <div class="stock-detail-list">
+      ${row.entries.map(({ order, product, qty }) => `
+        <div class="stock-detail-item">
+          <div class="stock-detail-meta">
+            <span class="order-id">${order.id}</span>
+            ${platformBadgeHtml(order)}
+            ${badgeHtml(order.status)}
+            <span style="color:var(--muted); font-size:12px;">${order.date}</span>
+          </div>
+          <div style="display:grid; grid-template-columns:minmax(160px, 1fr) auto; gap:10px; align-items:start;">
+            <div>
+              <div class="buyer-name">${order.buyer}</div>
+              <div style="color:var(--muted); font-size:12px; margin-top:4px;">${product.name}</div>
+              ${order.notes ? `<div style="color:var(--muted); font-size:12px; margin-top:8px;">${order.notes}</div>` : ''}
+            </div>
+            <div style="text-align:right;">
+              <div class="price">${qty}x</div>
+              <div style="font-size:12px; color:var(--muted);">${Number(product.price || 0).toFixed(2)} EUR</div>
+              <div style="margin-top:8px;">${gmailLinksHtml(order)}</div>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderStockReview() {
+  const rows = buildStockRows();
+  if (!selectedStockKey && rows.length) selectedStockKey = rows[0].key;
+  if (selectedStockKey && !rows.some(row => row.key === selectedStockKey)) selectedStockKey = rows[0]?.key || '';
+
+  document.getElementById('stock-summary').innerHTML = rows.length
+    ? rows.map(row => `
+      <div class="stock-card is-clickable ${row.key === selectedStockKey ? 'active' : ''}" onclick="selectStock('${row.key.replace(/'/g, "\\'")}')">
+        <div class="stock-label">${row.key}</div>
+        <div class="stock-qty">${row.qty}</div>
+      </div>
+    `).join('')
+    : '<div class="empty"><div class="empty-text">Sem stock pendente para avaliar</div></div>';
+
+  const tb = document.getElementById('stock-table');
+  if (!rows.length) {
+    tb.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-text">Nenhuma encomenda pendente ou paga por enviar</div></div></td></tr>';
+    renderStockDetail(null);
+    return;
+  }
+
+  tb.innerHTML = rows.map(row => `
+    <tr class="stock-row-clickable" onclick="selectStock('${row.key.replace(/'/g, "\\'")}')">
+      <td><span class="product-tag">${row.key}</span></td>
+      <td class="price">${row.qty}</td>
+      <td>${Array.from(row.orders).join(', ')}</td>
+      <td>${Array.from(row.buyers).join(', ')}</td>
+      <td><button class="btn-icon" onclick="event.stopPropagation(); selectStock('${row.key.replace(/'/g, "\\'")}')">Abrir detalhe</button></td>
+    </tr>
+  `).join('');
+
+  renderStockDetail(rows.find(row => row.key === selectedStockKey) || rows[0]);
+}
+
+// UNPAID STOCK
+function pendingNextStep(order) {
+  const note = normalizeText(order.notes || '');
+  if (note.includes('alioshop')) return 'Aguardar pagamento em 08/05/2026.';
+  if (note.includes('fredericobranco10')) return 'Confirmar prata; se aceitar, finalizar compra por 115 EUR.';
+  if (note.includes('susanalucas7676')) return 'Repor/reservar link em 08/05/2026 para pagamento de 50 EUR.';
+  return order.notes || 'Aguardar pagamento/confirmacao.';
+}
+
+function stockSummaryForOrders(list) {
+  const buckets = {};
+  list.forEach(order => {
+    (order.products || []).forEach(product => {
+      stockItemsForProduct(product).forEach(item => {
+        if (!buckets[item.key]) buckets[item.key] = { key: item.key, qty: 0 };
+        buckets[item.key].qty += item.qty;
+      });
+    });
+  });
+  const preferred = ['Pulseiras 82g', 'Pulseiras 35g', 'Colares', 'Pulseiras - outras', 'Colares - outros'];
+  return Object.values(buckets).sort((a, b) => {
+    const ai = preferred.indexOf(a.key);
+    const bi = preferred.indexOf(b.key);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi) || a.key.localeCompare(b.key, 'pt');
+  });
+}
+
+function renderUnpaidStock() {
+  const list = orders.filter(o => o.status === 'pendente');
+  const total = list.reduce((s, o) => s + o.total, 0);
+  const summary = stockSummaryForOrders(list);
+
+  document.getElementById('unpaid-stock-kpis').innerHTML = `
+    <div class="kpi-card k1">
+      <div class="kpi-label">Pendentes</div>
+      <div class="kpi-val">${list.length}</div>
+    </div>
+    <div class="kpi-card k2">
+      <div class="kpi-label">Valor Potencial</div>
+      <div class="kpi-val">${total.toFixed(2)}€</div>
+    </div>
+    <div class="kpi-card k4">
+      <div class="kpi-label">A Confirmar</div>
+      <div class="kpi-val">${list.filter(o => normalizeText(o.notes || '').includes('confirm')).length}</div>
+    </div>
+  `;
+
+  document.getElementById('unpaid-stock-summary').innerHTML = summary.length
+    ? summary.map(row => `
+      <div class="stock-card">
+        <div class="stock-label">${row.key}</div>
+        <div class="stock-qty">${row.qty}</div>
+      </div>
+    `).join('')
+    : '<div class="empty"><div class="empty-text">Sem stock pendente por avaliar</div></div>';
+
+  const tb = document.getElementById('unpaid-stock-table');
+  if (!list.length) {
+    tb.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-text">Nao ha encomendas pendentes</div></div></td></tr>';
+    return;
+  }
+
+  tb.innerHTML = list.map(o => `
+    <tr class="${urgencyRowClass(o)}">
+      <td class="order-id">${o.id}</td>
+      <td><div class="buyer-name">${o.buyer}</div>${o.username ? `<div style="color:var(--muted);font-size:11px;">${o.username}</div>` : ''}</td>
+      <td>${platformBadgeHtml(o)}</td>
+      <td class="price">${o.total.toFixed(2)}€</td>
+      <td>${(o.products || []).map(p => `<span class="product-tag">${p.qty && p.qty > 1 ? p.qty + 'x ' : ''}${p.name}</span>`).join('')}</td>
+      <td class="notes-cell" style="max-width:360px;" title="${o.notes || ''}">${pendingNextStep(o)}</td>
+    </tr>
+  `).join('');
+}
+
+// SHIPPING PLAN
+function renderShippingPlan() {
+  const list = orders.filter(o => o.status === 'pago');
+  const total = list.reduce((s, o) => s + o.total, 0);
+  const withPdf = list.filter(o => o.gmail?.labelFile).length;
+  const withoutPdf = list.length - withPdf;
+
+  document.getElementById('shipping-plan-kpis').innerHTML = `
+    <div class="kpi-card k1">
+      <div class="kpi-label">Por Enviar</div>
+      <div class="kpi-val">${list.length}</div>
+    </div>
+    <div class="kpi-card k2">
+      <div class="kpi-label">Valor Por Enviar</div>
+      <div class="kpi-val">${total.toFixed(2)}€</div>
+    </div>
+    <div class="kpi-card k3">
+      <div class="kpi-label">PDFs Prontos</div>
+      <div class="kpi-val">${withPdf}</div>
+    </div>
+    <div class="kpi-card k4">
+      <div class="kpi-label">Sem PDF</div>
+      <div class="kpi-val">${withoutPdf}</div>
+    </div>
+  `;
+
+  const tb = document.getElementById('shipping-plan-table');
+  if (!list.length) {
+    tb.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-text">Nao ha encomendas pagas por enviar</div></div></td></tr>';
+    return;
+  }
+
+  tb.innerHTML = list.map(o => `
+    <tr class="${urgencyRowClass(o)}">
+      <td class="order-id">${o.id}</td>
+      <td>${platformBadgeHtml(o)}</td>
+      <td><div class="buyer-name">${o.buyer}</div>${o.username ? `<div style="color:var(--muted);font-size:11px;">${o.username}</div>` : ''}</td>
+      <td>${(o.products || []).map(p => `<span class="product-tag">${p.qty && p.qty > 1 ? p.qty + 'x ' : ''}${p.name}</span>`).join('')}</td>
+      <td class="price">${o.total.toFixed(2)}€</td>
+      <td><span class="route-pill">${o.address || 'Confirmar envio'}</span>${o.tracking ? `<div style="margin-top:5px;">${trackingLinkHtml(o)}</div>` : ''}</td>
+      <td>${labelActionHtml(o)}</td>
+      <td class="notes-cell" style="max-width:280px;" title="${o.notes || ''}">${o.notes || '—'}</td>
+    </tr>
+  `).join('');
+}
+
+// TRACKING
+function renderTracking() {
+  const list = orders.filter(o => ['enviado', 'entregue'].includes(o.status) || o.trackingInfo);
+  const inTransit = list.filter(o => o.status === 'enviado' || o.trackingInfo?.statusText).length;
+  const delivered = list.filter(o => o.status === 'entregue').length;
+  const withEmailUpdate = list.filter(o => o.trackingInfo?.sourceEmailId).length;
+
+  document.getElementById('tracking-kpis').innerHTML = `
+    <div class="kpi-card k1">
+      <div class="kpi-label">A acompanhar</div>
+      <div class="kpi-val">${list.length}</div>
+    </div>
+    <div class="kpi-card k3">
+      <div class="kpi-label">Em transito</div>
+      <div class="kpi-val">${inTransit}</div>
+    </div>
+    <div class="kpi-card k5">
+      <div class="kpi-label">Entregues</div>
+      <div class="kpi-val">${delivered}</div>
+    </div>
+    <div class="kpi-card k2">
+      <div class="kpi-label">Updates Vinted</div>
+      <div class="kpi-val">${withEmailUpdate}</div>
+    </div>
+  `;
+
+  const tb = document.getElementById('tracking-table');
+  if (!list.length) {
+    tb.innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-text">Ainda nao ha encomendas enviadas para acompanhar</div></div></td></tr>';
+    return;
+  }
+
+  tb.innerHTML = list.map(o => {
+    const info = o.trackingInfo || {};
+    return `
+      <tr>
+        <td class="order-id">${o.id}</td>
+        <td><div class="buyer-name">${o.buyer}</div>${o.username ? `<div style="color:var(--muted);font-size:11px;">${o.username}</div>` : ''}</td>
+        <td>${platformBadgeHtml(o)}</td>
+        <td>${badgeHtml(o.status)}</td>
+        <td>${trackingLinkHtml(o)}</td>
+        <td>${info.statusText || (o.status === 'entregue' ? 'Entregue' : 'Sem update Vinted')}</td>
+        <td>${info.expectedDelivery || '—'}</td>
+        <td>${info.product || productNames(o)}</td>
+        <td>${info.sourceEmailId ? `<a class="mail-link" target="_blank" rel="noopener" href="${gmailMessageUrl(info.sourceEmailId)}">Email Vinted</a>` : gmailLinksHtml(o)}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// â”€â”€â”€ CORREIOS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function renderCorreios() {
+  const filter = document.getElementById('filter-correios')?.value || 'pago';
+  const list = filter ? orders.filter(o => o.status === filter) : orders;
+
+  const el = document.getElementById('correios-list');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">ðŸ“®</div><div class="empty-text">Nenhuma encomenda ${filter ? filter : ''}</div></div>`;
+    return;
+  }
+
+  el.innerHTML = list.map((o, i) => `
+    <div class="detail-card" style="page-break-inside: avoid; margin-bottom: 20px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:18px;">${o.buyer}</div>
+          ${o.username ? `<div style="color:var(--muted); font-size:12px; margin-top:2px;">${o.username}</div>` : ''}
+        </div>
+        <div style="text-align:right;">
+          <div class="order-id">${o.id}</div>
+          <div style="color:var(--muted); font-size:12px; margin-top:2px;">${o.date}</div>
+          <div style="margin-top:4px;">${badgeHtml(o.status)}</div>
+          <div style="margin-top:8px;">${gmailLinksHtml(o)}</div>
+        </div>
+      </div>
+
+      ${o.address ? `
+        <div style="background:var(--surface2); border-radius:8px; padding:12px 14px; margin-bottom:14px; font-size:13px;">
+          <div style="color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">ðŸ“ Morada</div>
+          <strong>${o.address}</strong>
+        </div>
+      ` : ''}
+
+      <div style="margin-bottom:12px;">
+        <div style="color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Produtos</div>
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th style="text-align:left; padding:6px 8px; font-size:11px; color:var(--muted); font-weight:500;">Produto</th>
+              <th style="text-align:right; padding:6px 8px; font-size:11px; color:var(--muted); font-weight:500;">PreÃ§o</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${o.products.map(p => `
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:8px 8px; font-size:13px;">${p.name}</td>
+                <td style="padding:8px 8px; text-align:right; color:var(--accent); font-weight:500;">${p.price.toFixed(2)}€</td>
+              </tr>
+            `).join('')}
+            <tr>
+              <td style="padding:10px 8px; font-family:'Space Grotesk',sans-serif; font-weight:700;">TOTAL</td>
+              <td style="padding:10px 8px; text-align:right; font-family:'Space Grotesk',sans-serif; font-weight:800; color:var(--accent); font-size:16px;">${o.total.toFixed(2)}€</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      ${o.notes ? `
+        <div style="font-size:12px; color:var(--muted); padding:8px 12px; background:var(--surface2); border-radius:6px; border-left:3px solid var(--accent2);">
+          ðŸ“ ${o.notes}
+        </div>
+      ` : ''}
+
+      ${i < list.length - 1 ? '' : ''}
+    </div>
+  `).join('<div style="border-top: 2px dashed var(--border); margin: 20px 0;" class="no-print"></div>');
+}
+
+// â”€â”€â”€ NOTIFY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function notify(msg) {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// â”€â”€â”€ INIT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+updateHeader();
+renderDashboard();
+
+// Dados reais extraidos do Gmail Vinted e Wallapop em 06/05/2026.
+if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== DATASET_VERSION) {
+  const realOrders = [
+      {
+          id: "VTD-013",
+          date: "2026-05-07",
+          buyer: "susanalucas7676",
+          username: "susanalucas7676",
+          email: "susanalucas7676@vinted.local",
+          phone: "",
+          address: "Vinted - pagamento previsto para sexta-feira, 08/05/2026",
+          products: [
+              {
+                  name: "Colar Prata India 48 cm (95g)",
+                  qty: 1,
+                  price: 50
+              }
+          ],
+          total: 50,
+          status: "pendente",
+          payment: "Vinted",
+          platform: "Vinted",
+          tracking: "",
+          notes: "Adicionado a partir de conversa Vinted em 07/05/2026. susanalucas7676 disse que so na sexta-feira, 08/05/2026, podera fazer o pagamento. Artigo: Colar Prata India 48 cm (95g), 50 EUR. Foi indicado que o artigo continua disponivel ate haver pagamento e que na sexta-feira o anuncio/link sera reposto para finalizar a compra. Sem email de venda/etiqueta ainda.",
+          gmail: {
+              query: "from:no-reply@vinted.pt susanalucas7676 \"Colar Prata India\""
+          }
+      },
+      {
+          id: "VTD-012",
+          date: "2026-05-07",
+          buyer: "fredericobranco10",
+          username: "fredericobranco10",
+          email: "fredericobranco10@vinted.local",
+          phone: "",
+          address: "Vinted - proposta condicional; confirmar prata antes do pagamento",
+          products: [
+              {
+                  name: "Colar Prata India 48 cm (95g)",
+                  qty: 1,
+                  price: 65
+              },
+              {
+                  name: "Pulseira Prata India fina 35g",
+                  qty: 1,
+                  price: 20
+              },
+              {
+                  name: "Pulseira Prata India grossa 82g",
+                  qty: 1,
+                  price: 30
+              }
+          ],
+          total: 115,
+          status: "pendente",
+          payment: "Vinted",
+          platform: "Vinted",
+          tracking: "",
+          notes: "Adicionado a partir de conversa Vinted em 07/05/2026. fredericobranco10 diz que compra 3 artigos por 115 EUR: 1 colar, 1 pulseira fina e 1 pulseira grossa, se confirmar que sao realmente prata. Foi-lhe indicado que amanha podera ve-las. Sem email de venda/etiqueta ainda.",
+          gmail: {
+              query: "from:no-reply@vinted.pt fredericobranco10 \"115\""
+          }
+      },
+      {
+          id: "VTD-011",
+          date: "2026-05-07",
+          buyer: "Alioshop",
+          email: "alioshop@vinted.local",
+          phone: "",
+          address: "Vinted - pagamento previsto para 08/05/2026",
+          products: [
+              {
+                  name: "2x Pulseira Prata India 82g",
+                  qty: 2,
+                  price: 90
+              },
+              {
+                  name: "Pulseira Prata India 35g",
+                  qty: 1,
+                  price: 30
+              },
+              {
+                  name: "Colar Prata India",
+                  qty: 1,
+                  price: 45
+              }
+          ],
+          total: 165,
+          status: "pendente",
+          payment: "Vinted",
+          platform: "Vinted",
+          tracking: "",
+          notes: "Encomenda adicionada a partir de screenshot Vinted em 07/05/2026. Pagamento previsto para 08/05/2026. Conjunto: 4 artigos; total vendedor 165,00 EUR; subtotal para comprador 173,95 EUR. Sem email de venda/etiqueta ainda. Alioshop cre receber amanha, 08/05/2026, e devera fazer o pagamento nessa altura.",
+          gmail: {
+              query: "from:no-reply@vinted.pt \"4 artigos\" \"165,00\""
+          }
+      },
+      {
+          id: "WLP-001",
+          date: "2026-05-06",
+          buyer: "Ivan",
+          email: "ivan@wallapop.local",
+          phone: "",
+          address: "Wallapop - enviar a partir de um ponto de entrega",
+          products: [
+              {
+                  name: "Pulseira Prata India 82g",
+                  qty: 1,
+                  price: 50
+              }
+          ],
+          total: 50,
+          status: "pago",
+          payment: "Wallapop",
+          tracking: "",
+          notes: "Fonte Gmail Wallapop: venda 19dfbd0cbfac12d3; confirmacao/instrucoes 19dfbde4f62c95c5. Etiqueta PDF Wallapop adicionada manualmente a partir do ficheiro local; instrucoes Wallapop mantidas como apoio.",
+          gmail: {
+              saleEmailId: "19dfbd0cbfac12d3",
+              labelEmailId: "19dfbde4f62c95c5",
+              labelUrl: "http://2qgnksph.r.eu-west-1.awstrack.me/L0/http:%2F%2Fwww.wallapop.com%2Fdelivery%2Ftimeline%3Fb=lqzm3orqrl6v%26i=0j28l3gwoejy%26r=957cc1c1-bb6f-4a8a-bd88-cf73d24bcf15/1/0102019dfbde4d27-101c1f0a-ce2f-463e-9483-4a506fce2eed-000000/W2CMX0qL3qtcMVpo5QhtMtMoHcM=473",
+              query: "from:info@wallapop.com Ivan \"Pulseira Prata India 82g\"",
+              labelFile: "etiquetas/WLP-001-Etiqueta-Wallapop-Ivan.pdf"
+          },
+          platform: "Wallapop"
+      },
+      {
+          id: "VTD-001",
+          date: "2026-05-06",
+          buyer: "basma65",
+          email: "basma65@vinted.local",
+          phone: "",
+          address: "InPost Ponto Pack / Locker - etiqueta digital",
+          products: [
+              {
+                  name: "Lote Vinted - 2 artigos: Colar Prata India 48 cm (95gr) + Pulseira Prata da India 35g",
+                  qty: 1,
+                  price: 70
+              }
+          ],
+          total: 70,
+          status: "pago",
+          payment: "Vinted",
+          tracking: "73145036",
+          notes: "Fonte Gmail: venda 19dfc66f2b5bdc2c; etiqueta 19dfd9eb609130ee. Vinted order ID 19637452760. Prazo etiqueta: 13/05/2026, 09h28.",
+          gmail: {
+              saleEmailId: "19dfc66f2b5bdc2c",
+              labelEmailId: "19dfd9eb609130ee",
+              labelFile: "etiquetas/VTD-002-Etiqueta-Digital-Vinted-19637452760.pdf",
+              query: "from:no-reply@vinted.pt basma65 \"Vendeste um artigo na Vinted\""
+          },
+          platform: "Vinted"
+      },
+      {
+          id: "VTD-002",
+          date: "2026-05-05",
+          buyer: "riccy26",
+          email: "riccy26@vinted.local",
+          phone: "",
+          address: "Vinted Go - imprimir etiqueta",
+          products: [
+              {
+                  name: "Pulseira Prata da India 35g",
+                  qty: 1,
+                  price: 22
+              }
+          ],
+          total: 22,
+          status: "pago",
+          payment: "Vinted",
+          tracking: "1778017024008023",
+          notes: "Fonte Gmail: venda 19dfa122888d504f; etiqueta 19dfa12c49076801. Vinted order ID 19632428995. Prazo etiqueta: 13/05/2026, 09h00.",
+          gmail: {
+              saleEmailId: "19dfa122888d504f",
+              labelEmailId: "19dfa12c49076801",
+              labelFile: "etiquetas/VTD-002-Etiqueta-Vinted-19632428995.pdf",
+              query: "from:no-reply@vinted.pt riccy26 \"Vendeste um artigo na Vinted\""
+          },
+          platform: "Vinted"
+      },
+      {
+          id: "VTD-003",
+          date: "2026-05-05",
+          buyer: "uveuva",
+          email: "uveuva@vinted.local",
+          phone: "",
+          address: "DPD Pickup - etiqueta digital",
+          products: [
+              {
+                  name: "Pulseira Prata Indiana 35g",
+                  qty: 1,
+                  price: 25
+              }
+          ],
+          total: 25,
+          status: "pago",
+          payment: "Vinted",
+          tracking: "09867475168023V",
+          notes: "Fonte Gmail: venda 19df9e82f97d5c3c; etiqueta 19df9f26ff391ce8. Vinted order ID 19631810046. Prazo etiqueta: 13/05/2026, 09h00.",
+          gmail: {
+              saleEmailId: "19df9e82f97d5c3c",
+              labelEmailId: "19df9f26ff391ce8",
+              labelFile: "etiquetas/VTD-003-Etiqueta-Digital-Vinted-19631810046.pdf",
+              query: "from:no-reply@vinted.pt uveuva \"Vendeste um artigo na Vinted\""
+          },
+          platform: "Vinted"
+      },
+      {
+          id: "VTD-004",
+          date: "2026-05-05",
+          buyer: "miguel5698",
+          email: "miguel5698@vinted.local",
+          phone: "",
+          address: "Vinted Go - imprimir etiqueta",
+          products: [
+              {
+                  name: "Colar Prata da India - 48,24 cm",
+                  qty: 1,
+                  price: 45
+              }
+          ],
+          total: 45,
+          status: "pago",
+          payment: "Vinted",
+          tracking: "1778005935238136",
+          notes: "Fonte Gmail: venda 19df95ef6f478ef1; etiqueta 19df969924711dfb. Vinted order ID 19628027862. Prazo etiqueta: 12/05/2026, 19h20.",
+          gmail: {
+              saleEmailId: "19df95ef6f478ef1",
+              labelEmailId: "19df969924711dfb",
+              labelFile: "etiquetas/VTD-001-Etiqueta-Vinted-19628027862.pdf",
+              query: "from:no-reply@vinted.pt miguel5698 \"Colar Prata\""
+          },
+          platform: "Vinted"
+      },
+      {
+          id: "VTD-005",
+          date: "2026-04-29",
+          buyer: "miguel5698",
+          email: "miguel5698@vinted.local",
+          phone: "",
+          address: "Vinted Go - imprimir etiqueta",
+          products: [
+              {
+                  name: "Pulseira Prata Indiana Macica 82g",
+                  qty: 1,
+                  price: 35
+              }
+          ],
+          total: 35,
+          status: "enviado",
+          payment: "Vinted",
+          tracking: "1777638067892295",
+          notes: "Fonte Gmail: venda 19ddb788890ac90c; etiqueta 19de37c58da285ef. Vinted order ID 19513937043. Prazo etiqueta: 07/05/2026, 09h00.",
+          gmail: {
+              saleEmailId: "19ddb788890ac90c",
+              labelEmailId: "19de37c58da285ef",
+              labelFile: "etiquetas/VTD-005-Etiqueta-Vinted-19513937043.pdf",
+              query: "from:no-reply@vinted.pt miguel5698 \"Pulseira Prata Indiana Macica 82g\""
+          },
+          platform: "Vinted",
+          trackingInfo: {
+              sourceEmailId: "19df87ab4da09f9c",
+              statusText: "A caminho do comprador",
+              expectedDelivery: "Mai 14 - Mai 18",
+              product: "Pulseira Prata Indiana Macica 82g",
+              source: "Email Vinted de 05/05/2026 14:11"
+          }
+      },
+      {
+          id: "VTD-006",
+          date: "2026-04-29",
+          buyer: "ronboom01",
+          email: "ronboom01@vinted.local",
+          phone: "",
+          address: "DPD Pickup - etiqueta digital",
+          products: [
+              {
+                  name: "Pulseira prata indiana",
+                  qty: 1,
+                  price: 30
+              }
+          ],
+          total: 30,
+          status: "enviado",
+          payment: "Vinted",
+          tracking: "09866096841879J",
+          notes: "Fonte Gmail: venda 19ddb471e3ff4044; etiqueta 19de37ca3943491f. Vinted order ID 19493964822. Prazo etiqueta: 07/05/2026, 09h00.",
+          gmail: {
+              saleEmailId: "19ddb471e3ff4044",
+              labelEmailId: "19de37ca3943491f",
+              labelFile: "etiquetas/VTD-004-Etiqueta-Digital-Vinted-19493964822.pdf",
+              query: "from:no-reply@vinted.pt ronboom01 \"Pulseira prata indiana\""
+          },
+          platform: "Vinted",
+          trackingInfo: {
+              sourceEmailId: "19df9850d92b215e",
+              statusText: "A caminho do comprador",
+              expectedDelivery: "Mai 07 - Mai 08",
+              product: "Pulseira prata indiana",
+              source: "Email Vinted de 05/05/2026 16:38"
+          }
+      },
+      {
+          id: "VTD-007",
+          date: "2026-04-29",
+          buyer: "rfz24",
+          email: "rfz24@vinted.local",
+          phone: "",
+          address: "Vinted Go - imprimir etiqueta",
+          products: [
+              {
+                  name: "Pulseira Prata Indiana Macica 82g",
+                  qty: 1,
+                  price: 40
+              }
+          ],
+          total: 40,
+          status: "pago",
+          payment: "Vinted",
+          tracking: "1777479159587364",
+          notes: "Fonte Gmail: venda 19dda015655eb836; etiqueta 19dda03a0cb056c9. Vinted order ID 19494006830. Prazo etiqueta: 06/05/2026, 17h09.",
+          gmail: {
+              saleEmailId: "19dda015655eb836",
+              labelEmailId: "19dda03a0cb056c9",
+              labelFile: "etiquetas/VTD-007-Etiqueta-Vinted-19494006830.pdf",
+              query: "from:no-reply@vinted.pt rfz24 \"Pulseira Prata Indiana Macica 82g\""
+          },
+          platform: "Vinted"
+      }
+  ];
+
+  orders = realOrders;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+  localStorage.setItem('vinted_orders_dataset_version', DATASET_VERSION);
+  updateHeader();
+  renderDashboard();
+}
+</script>
+</body>
+</html>
+

@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ERP Vinted</title>
+  <style>
+    :root {
+      --bg: #eef3f8;
+      --nav: #17324d;
+      --nav-2: #214766;
+      --ink: #17212f;
+      --muted: #647386;
+      --line: #d8e1ea;
+      --panel: #ffffff;
+      --head: #f6f9fc;
+      --blue: #1f5f99;
+      --green: #177245;
+      --amber: #9b6400;
+      --red: #a93636;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+    }
+
+    .erp {
+      display: grid;
+      grid-template-columns: 230px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      background: var(--nav);
+      color: #fff;
+      padding: 20px 14px;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 700;
+      padding: 0 10px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.18);
+    }
+
+    nav {
+      display: grid;
+      gap: 6px;
+      margin-top: 18px;
+    }
+
+    nav a {
+      color: rgba(255,255,255,.86);
+      text-decoration: none;
+      padding: 11px 10px;
+      border-radius: 6px;
+      display: block;
+    }
+
+    nav a.active,
+    nav a:hover {
+      background: var(--nav-2);
+      color: #fff;
+    }
+
+    .content {
+      min-width: 0;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 23px;
+    }
+
+    .updated {
+      color: var(--muted);
+      margin-top: 4px;
+      font-size: 13px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    input,
+    select {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      min-height: 38px;
+      padding: 9px 10px;
+    }
+
+    input { width: min(420px, 62vw); }
+
+    main {
+      padding: 22px 24px 42px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .card,
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .card {
+      padding: 14px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .value {
+      font-size: 24px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .value.money { color: var(--green); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
+      gap: 18px;
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      font-size: 16px;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .stage {
+      background: var(--head);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 88px;
+    }
+
+    .stage strong {
+      display: block;
+      font-size: 22px;
+      margin-top: 8px;
+    }
+
+    .finance {
+      padding: 8px 16px 16px;
+    }
+
+    .finance-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .finance-row:last-child { border-bottom: 0; }
+
+    .finance-row span:last-child {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .table-wrap {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1420px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--head);
+      color: #34465a;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tbody tr:hover { background: #f9fbfd; }
+
+    .num {
+      text-align: right;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tag.ok { background: #e1f2e9; color: var(--green); }
+    .tag.wait { background: #fff1d4; color: var(--amber); }
+    .tag.stop { background: #fde7e7; color: var(--red); }
+
+    .muted { color: var(--muted); }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      padding: 14px 16px 16px;
+    }
+
+    .action {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      background: var(--head);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+    }
+
+    .priority {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+
+    @media (max-width: 1050px) {
+      .erp { grid-template-columns: 1fr; }
+      aside { position: static; }
+      nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-2 { grid-template-columns: 1fr; }
+      .pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 620px) {
+      header, main { padding-left: 14px; padding-right: 14px; }
+      nav { grid-template-columns: 1fr; }
+      .kpis, .pipeline { grid-template-columns: 1fr; }
+      input { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="erp">
+    <aside>
+      <div class="brand">ERP Marketplaces</div>
+      <nav aria-label="Modulos ERP">
+        <a class="active" href="#dashboard">Dashboard</a>
+        <a href="#orders">Encomendas</a>
+        <a href="#logistics">Logistica</a>
+        <a href="#finance">Financeiro</a>
+        <a href="#actions">Acoes</a>
+      </nav>
+    </aside>
+
+    <div class="content">
+      <header id="dashboard">
+        <div>
+          <h1>Gestao de encomendas</h1>
+          <div class="updated">Atualizado em 07/05/2026 a partir dos emails Vinted e etiqueta Wallapop.</div>
+        </div>
+        <div class="toolbar">
+          <input id="search" type="search" placeholder="Pesquisar comprador, artigo, codigo, tracking">
+          <select id="statusFilter">
+            <option value="">Todos</option>
+            <option value="ativo">Ativas</option>
+            <option value="cancelado">Canceladas</option>
+            <option value="sem-etiqueta">Sem etiqueta</option>
+          </select>
+        </div>
+      </header>
+
+      <main>
+        <section class="kpis" aria-label="Indicadores principais">
+          <div class="card"><div class="label">Encomendas</div><div class="value">10</div></div>
+          <div class="card"><div class="label">Ativas</div><div class="value">8</div></div>
+          <div class="card"><div class="label">Canceladas</div><div class="value">2</div></div>
+          <div class="card"><div class="label">Com etiqueta</div><div class="value">9</div></div>
+          <div class="card"><div class="label">Com tracking</div><div class="value">5</div></div>
+          <div class="card"><div class="label">Total ativo</div><div class="value money">285,00 EUR</div></div>
+        </section>
+
+        <section class="grid-2">
+          <div class="panel" id="logistics">
+            <h2>Pipeline operacional</h2>
+            <div class="pipeline">
+              <div class="stage"><div class="label">Nova venda / sem etiqueta</div><strong>1</strong><span class="muted">jaamadrid</span></div>
+              <div class="stage"><div class="label">Etiqueta criada</div><strong>4</strong><span class="muted">Inclui InPost e DPD confirmadas</span></div>
+              <div class="stage"><div class="label">Em transito</div><strong>2</strong><span class="muted">ronboom01, miguel5698</span></div>
+              <div class="stage"><div class="label">Wallapop</div><strong>1</strong><span class="muted">Tracking DD4115456101P</span></div>
+              <div class="stage"><div class="label">Canceladas</div><strong>2</strong><span class="muted">Excluidas do total ativo</span></div>
+            </div>
+          </div>
+
+          <div class="panel" id="finance">
+            <h2>Financeiro</h2>
+            <div class="finance">
+              <div class="finance-row"><span>Total ativo a receber</span><span>285,00 EUR</span></div>
+              <div class="finance-row"><span>Total cancelado/reembolsado</span><span>62,00 EUR</span></div>
+              <div class="finance-row"><span>Total bruto encontrado</span><span>347,00 EUR</span></div>
+              <div class="finance-row"><span>Encomenda media ativa</span><span>40,71 EUR</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="orders">
+          <h2>Modulo de encomendas</h2>
+          <div class="table-wrap">
+            <table id="ordersTable">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Canal</th>
+                  <th>Cliente</th>
+                  <th>Artigos</th>
+                  <th class="num">Qtd</th>
+                  <th class="num">Total</th>
+                  <th class="num">Reconhecido</th>
+                  <th>Pagamento</th>
+                  <th>Estado ERP</th>
+                  <th>Transportadora</th>
+                  <th>Codigo</th>
+                  <th>Tracking</th>
+                  <th>ID pedido</th>
+                  <th>Prazo / entrega</th>
+                  <th>Observacoes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-state="ativo"><td>2026-05-07</td><td>Wallapop</td><td>Ivan Hernandez</td><td>Encomenda Wallapop para Madrid</td><td class="num">1</td><td class="num"></td><td class="num"></td><td>Etiqueta de envio adicionada ao ERP</td><td><span class="tag ok">Tracking adicionado</span></td><td>CTT Expresso</td><td>DD4115456101P</td><td>DD4115456101P</td><td></td><td>Destino: Madrid, Espanha</td><td>Tracking lido da etiqueta enviada.</td></tr>
+                <tr data-state="ativo"><td>2026-05-07 15:38</td><td>Vinted</td><td>somaqa95</td><td>Colar Prata India 48 cm (95gr); Pulseira Prata Indiana 35g</td><td class="num">2</td><td class="num">58,00 EUR</td><td class="num">58,00 EUR</td><td>Pago pelo comprador; saldo apos conclusao</td><td><span class="tag ok">Recolhida pela InPost</span></td><td>InPost Locker/Point</td><td>73447530</td><td>InPost 73447530</td><td>19663432283</td><td>Recolhida em 2026-05-07 16:03; enviar ate 2026-05-14 15:37</td><td>Email InPost confirma recolha no Ponto Pack | Locker CANTINHO DA ARTESA.</td></tr>
+                <tr data-state="ativo sem-etiqueta"><td>2026-05-07 15:12</td><td>Vinted</td><td>jaamadrid</td><td>Pulseira Prata Indiana 35g</td><td class="num">1</td><td class="num">22,00 EUR</td><td class="num">22,00 EUR</td><td>Pago pelo comprador; saldo apos conclusao</td><td><span class="tag wait">Sem etiqueta</span></td><td></td><td></td><td></td><td></td><td>Prazo de 5 dias no email de venda</td><td>Email de atualizacao indica reservado para jaamadrid.</td></tr>
+                <tr data-state="ativo"><td>2026-05-06 09:28</td><td>Vinted</td><td>basma65</td><td>Colar Prata India 48 cm (95gr); Pulseira Prata da India 35g</td><td class="num">2</td><td class="num">70,00 EUR</td><td class="num">70,00 EUR</td><td>Pago pelo comprador; saldo apos conclusao</td><td><span class="tag ok">Recolhida pela InPost</span></td><td>InPost Locker/Point</td><td>73145036</td><td>InPost 73145036; VGS0000902441796</td><td>19637452760</td><td>Recolhida em 2026-05-07 16:05; enviar ate 2026-05-13 09:28</td><td>Email InPost confirma recolha no Ponto Pack | Locker CANTINHO DA ARTESA. Tracking Vinted Go tambem disponivel.</td></tr>
+                <tr data-state="cancelado"><td>2026-05-05 22:36</td><td>Vinted</td><td>riccy26</td><td>Pulseira Prata da India 35g</td><td class="num">1</td><td class="num">22,00 EUR</td><td class="num">0,00 EUR</td><td>Cancelado; reembolso ao comprador</td><td><span class="tag stop">Cancelado</span></td><td>Vinted Go</td><td>1778017024008023</td><td></td><td>19632428995</td><td>2026-05-13 09:00</td><td>Cancelamento associado ao mesmo link de conversa da venda.</td></tr>
+                <tr data-state="ativo"><td>2026-05-05 21:50</td><td>Vinted</td><td>uveuva</td><td>Pulseira Prata Indiana 35g</td><td class="num">1</td><td class="num">25,00 EUR</td><td class="num">25,00 EUR</td><td>Pago pelo comprador; saldo apos conclusao</td><td><span class="tag ok">Depositada na DPD</span></td><td>DPD Pickup</td><td>09867475168023V</td><td>DPD 09867475168023V</td><td>19631810046</td><td>Depositada em 2026-05-07 15:49</td><td>Email DPD confirma deposito na PAPELARIA MARIANA, Almada.</td></tr>
+                <tr data-state="ativo"><td>2026-05-05 19:20</td><td>Vinted</td><td>miguel5698</td><td>Colar Prata da India - 48,24 cm</td><td class="num">1</td><td class="num">45,00 EUR</td><td class="num">45,00 EUR</td><td>Pago pelo comprador; saldo apos conclusao</td><td><span class="tag ok">Etiqueta criada</span></td><td>Vinted Go</td><td>1778005935238136</td><td></td><td>19628027862</td><td>Enviar ate 2026-05-12 19:20</td><td></td></tr>
+                <tr data-state="ativo"><td>2026-04-30 00:00</td><td>Vinted</td><td>miguel5698</td><td>Pulseira Prata Indiana Macica 82g</td><td class="num">1</td><td class="num">35,00 EUR</td><td class="num">35,00 EUR</td><td>Pago pelo comprador; saldo apos conclusao</td><td><span class="tag ok">Em transito</span></td><td>Vinted Go</td><td>1777638067892295</td><td>VGS0000902441781</td><td>19513937043</td><td>Entrega 2026-05-14 a 2026-05-18</td><td>Email Vinted Go mostra detalhe 50,00 EUR; valor de venda no email foi 35,00 EUR.</td></tr>
+                <tr data-state="ativo"><td>2026-04-29 23:06</td><td>Vinted</td><td>ronboom01</td><td>Pulseira prata indiana</td><td class="num">1</td><td class="num">30,00 EUR</td><td class="num">30,00 EUR</td><td>Pago pelo comprador; saldo apos conclusao</td><td><span class="tag ok">Em transito</span></td><td>DPD Pickup</td><td>09866096841879J</td><td></td><td>19493964822</td><td>Entrega 2026-05-07 a 2026-05-08</td><td></td></tr>
+                <tr data-state="cancelado"><td>2026-04-29 17:10</td><td>Vinted</td><td>rfz24</td><td>Pulseira Prata Indiana Macica 82g</td><td class="num">1</td><td class="num">40,00 EUR</td><td class="num">0,00 EUR</td><td>Cancelado; reembolso ao comprador</td><td><span class="tag stop">Cancelado</span></td><td>Vinted Go</td><td>1777479159587364</td><td></td><td>19494006830</td><td>2026-05-06 17:09</td><td>Cancelamento associado ao mesmo link de conversa da venda.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="actions">
+          <h2>Acoes operacionais</h2>
+          <div class="actions">
+            <div class="action"><div class="priority">Prioridade</div><div>Gerar/encontrar etiqueta da encomenda de <strong>jaamadrid</strong>, unico pedido ativo sem codigo de envio encontrado.</div></div>
+            <div class="action"><div class="priority">Tracking</div><div>Acompanhar InPost <strong>73447530</strong> para somaqa95, InPost <strong>73145036</strong> para basma65 e DPD <strong>09867475168023V</strong> para uveuva; manter tambem <strong>VGS0000902441796</strong> e <strong>VGS0000902441781</strong> no Vinted Go.</div></div>
+            <div class="action"><div class="priority">Wallapop</div><div>Tracking adicionado: <strong>DD4115456101P</strong> para a encomenda Wallapop com destino a Madrid.</div></div>
+            <div class="action"><div class="priority">Financeiro</div><div>Considerar <strong>285,00 EUR</strong> como total ativo; os <strong>62,00 EUR</strong> cancelados ficam excluidos do valor a receber.</div></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const search = document.getElementById("search");
+    const filter = document.getElementById("statusFilter");
+    const rows = Array.from(document.querySelectorAll("#ordersTable tbody tr"));
+
+    function applyFilters() {
+      const term = search.value.trim().toLowerCase();
+      const state = filter.value;
+      rows.forEach((row) => {
+        const textMatch = !term || row.textContent.toLowerCase().includes(term);
+        const stateMatch = !state || row.dataset.state.split(" ").includes(state);
+        row.hidden = !(textMatch && stateMatch);
+      });
+    }
+
+    search.addEventListener("input", applyFilters);
+    filter.addEventListener("change", applyFilters);
+  </script>
+</body>
+</html>

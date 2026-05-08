@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
@@ -58,14 +58,6 @@
   .header-stats {
     display: flex;
     gap: 28px;
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
   }
 
   .stat-pill {
@@ -197,49 +189,6 @@
     color: #aaa3c2;
     padding: 16px 12px 8px;
     font-weight: 700;
-  }
-
-  #status-nav-items {
-    display: contents;
-  }
-
-  .nav-status-item {
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-  }
-
-  .nav-status-copy {
-    min-width: 0;
-  }
-
-  .nav-status-title {
-    display: block;
-  }
-
-  .nav-status-meta {
-    display: block;
-    margin-top: 3px;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    font-weight: 500;
-  }
-
-  .nav-item.active .nav-status-meta {
-    color: rgba(15,14,19,0.72);
-  }
-
-  .status-total-chip {
-    flex-shrink: 0;
-    color: var(--accent);
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-  }
-
-  .nav-item.active .status-total-chip {
-    color: #151515;
   }
 
   /* MAIN */
@@ -462,8 +411,6 @@
   .badge-entregue::before { background: var(--accent); }
   .badge-cancelado { background: rgba(255,92,106,0.1); color: var(--red); }
   .badge-cancelado::before { background: var(--red); }
-  .badge-reservado { background: rgba(124,92,252,0.14); color: #b7a8ff; }
-  .badge-reservado::before { background: var(--accent2); }
 
   .actions { display: flex; gap: 6px; align-items: center; }
 
@@ -1108,10 +1055,6 @@
       border-radius: 8px;
     }
 
-    .nav-status-item {
-      align-items: center;
-    }
-
     .nav-item span:last-child {
       white-space: normal;
       overflow-wrap: anywhere;
@@ -1230,10 +1173,7 @@
       <span class="lbl">Por enviar</span>
     </div>
   </div>
-  <div class="header-actions">
-    <button class="btn btn-ghost" onclick="downloadGithubHtml()">Exportar GitHub</button>
-    <button class="btn btn-primary" onclick="openModal()">+ Nova Encomenda</button>
-  </div>
+  <button class="btn btn-primary" onclick="openModal()">+ Nova Encomenda</button>
 </header>
 
 <div class="app">
@@ -1245,12 +1185,6 @@
     <div class="nav-item" onclick="showPage('orders', this)">
       <span class="nav-icon">EN</span> Encomendas
     </div>
-    <div class="nav-section">Estados</div>
-    <div id="status-nav-items"></div>
-    <div class="nav-item" onclick="showPage('reservas', this)">
-      <span class="nav-icon">RS</span> Reservas / apalavradas
-    </div>
-    <div class="nav-section">Operacao</div>
     <div class="nav-item" onclick="showPage('buyers', this)">
       <span class="nav-icon">CP</span> Compradores
     </div>
@@ -1289,7 +1223,6 @@
           <option value="enviado">Valor enviado</option>
           <option value="entregue">Valor entregue</option>
           <option value="cancelado">Valor cancelado</option>
-          <option value="reservado">Valor reservado</option>
         </select>
       </div>
 
@@ -1332,7 +1265,6 @@
           <option value="enviado">Enviado</option>
           <option value="entregue">Entregue</option>
           <option value="cancelado">Cancelado</option>
-          <option value="reservado">Reservado</option>
         </select>
         <button class="btn btn-primary" onclick="openModal()">+ Nova</button>
       </div>
@@ -1355,57 +1287,6 @@
             </tr>
           </thead>
           <tbody id="orders-table"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ORDER STATUS -->
-    <div class="page" id="page-order-status">
-      <div class="page-title" id="status-page-title">Estado</div>
-      <div class="page-sub" id="status-page-sub">Resumo financeiro por estado da encomenda</div>
-
-      <div class="cards-grid" id="status-kpis"></div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>#ID</th>
-              <th>Comprador</th>
-              <th>Plataforma</th>
-              <th>Produto</th>
-              <th>Valor unitario</th>
-              <th>Total encomenda</th>
-              <th>Estado</th>
-              <th>Nota / entrave</th>
-            </tr>
-          </thead>
-          <tbody id="status-orders-table"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- RESERVAS -->
-    <div class="page" id="page-reservas">
-      <div class="page-title">Reservas / apalavradas</div>
-      <div class="page-sub">Clientes que ainda dependem de pagamento, confirmacao ou outro desbloqueio antes de finalizar a encomenda</div>
-
-      <div class="cards-grid" id="reservas-kpis"></div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>Produto pretendido</th>
-              <th>Valor unitario</th>
-              <th>Total</th>
-              <th>Entrave / circunstancia</th>
-              <th>Estado</th>
-              <th>Data</th>
-            </tr>
-          </thead>
-          <tbody id="reservas-table"></tbody>
         </table>
       </div>
     </div>
@@ -1481,7 +1362,6 @@
               <th>Comprador</th>
               <th>Plataforma</th>
               <th>Valor potencial</th>
-              <th>Estado</th>
               <th>Artigos a avaliar</th>
               <th>Nota / proximo passo</th>
             </tr>
@@ -1522,7 +1402,6 @@
               <th>Comprador</th>
               <th>Produtos</th>
               <th>Total</th>
-              <th>Estado</th>
               <th>Envio</th>
               <th>Etiqueta / instrucoes</th>
               <th>Notas</th>
@@ -1628,7 +1507,6 @@
           <option value="enviado">Enviado</option>
           <option value="entregue">Entregue</option>
           <option value="cancelado">Cancelado</option>
-          <option value="reservado">Reservado</option>
         </select>
       </div>
 
@@ -1666,17 +1544,10 @@
 <script>
 // â”€â”€â”€ DATA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STORAGE_KEY = 'vinted_orders_reais_2026_05_06';
-const DATASET_VERSION = 'marketplace-online-mobile-export-2026-05-08-supabase-sync-v10';
-const SUPABASE_URL = 'https://rgqoilbnenvkdzcajvrq.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_qGEJ7hAxRStrmIQyBAbm6A_noEk9P__';
-const SUPABASE_TABLE = 'orders';
+const DATASET_VERSION = 'marketplace-online-mobile-export-2026-05-07-tracking-v7';
 let orders = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-let supabaseReady = false;
-let supabaseSyncTimer = null;
-let supabaseIsSyncing = false;
 let editingId = null;
 let productCount = 0;
-let currentStatusPage = 'pendente';
 const sortState = {
   dashboard: { key: 'date', dir: 'desc' },
   orders: { key: 'date', dir: 'desc' },
@@ -1684,109 +1555,9 @@ const sortState = {
   tracking: { key: 'eta', dir: 'asc' }
 };
 
-function save(options = {}) {
+function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
   localStorage.setItem(STORAGE_KEY + '_version', DATASET_VERSION);
-  if (!options.localOnly) queueSupabaseSync();
-}
-
-function supabaseHeaders(extra = {}) {
-  return {
-    apikey: SUPABASE_KEY,
-    Authorization: `Bearer ${SUPABASE_KEY}`,
-    'Content-Type': 'application/json',
-    ...extra
-  };
-}
-
-function supabaseOrderPayload(order) {
-  return {
-    id: order.id,
-    data: order,
-    status: order.status || '',
-    buyer: order.buyer || '',
-    username: order.username || '',
-    total: Number(order.total || 0),
-    platform: order.platform || order.payment || '',
-    order_date: order.date || '',
-    updated_at: new Date().toISOString()
-  };
-}
-
-async function supabaseFetch(path, options = {}) {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    ...options,
-    headers: supabaseHeaders(options.headers || {})
-  });
-  if (!response.ok) {
-    const text = await response.text().catch(() => '');
-    throw new Error(`Supabase ${response.status}: ${text || response.statusText}`);
-  }
-  if (response.status === 204) return null;
-  const raw = await response.text();
-  return raw ? JSON.parse(raw) : null;
-}
-
-async function loadOrdersFromSupabase() {
-  const rows = await supabaseFetch(`${SUPABASE_TABLE}?select=data&order=updated_at.desc`);
-  return (rows || []).map(row => row.data).filter(Boolean);
-}
-
-async function upsertOrdersToSupabase(list) {
-  if (!list.length) return;
-  await supabaseFetch(`${SUPABASE_TABLE}?on_conflict=id`, {
-    method: 'POST',
-    headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
-    body: JSON.stringify(list.map(supabaseOrderPayload))
-  });
-}
-
-async function deleteOrderFromSupabase(id) {
-  if (!supabaseReady || !id) return;
-  await supabaseFetch(`${SUPABASE_TABLE}?id=eq.${encodeURIComponent(id)}`, {
-    method: 'DELETE',
-    headers: { Prefer: 'return=minimal' }
-  });
-}
-
-function queueSupabaseSync() {
-  if (!supabaseReady) return;
-  clearTimeout(supabaseSyncTimer);
-  supabaseSyncTimer = setTimeout(() => syncOrdersToSupabase(), 350);
-}
-
-async function syncOrdersToSupabase() {
-  if (!supabaseReady || supabaseIsSyncing) return;
-  supabaseIsSyncing = true;
-  try {
-    await upsertOrdersToSupabase(orders);
-  } catch (err) {
-    console.error(err);
-    notify('Alteracao guardada neste browser; falhou sync online');
-  } finally {
-    supabaseIsSyncing = false;
-  }
-}
-
-async function initSupabaseSync() {
-  try {
-    const localSeed = Array.isArray(orders) ? [...orders] : [];
-    const remoteOrders = await loadOrdersFromSupabase();
-    supabaseReady = true;
-    if (remoteOrders.length) {
-      orders = remoteOrders;
-      save({ localOnly: true });
-      refreshAll();
-      notify('Dados carregados da Supabase');
-    } else if (localSeed.length) {
-      await upsertOrdersToSupabase(localSeed);
-      notify('Supabase inicializada com as encomendas atuais');
-    }
-  } catch (err) {
-    console.error(err);
-    supabaseReady = false;
-    notify('Modo local: nao foi possivel ligar a Supabase');
-  }
 }
 
 function setSort(table, key) {
@@ -1969,19 +1740,12 @@ function showPage(name, el) {
 
   if (name === 'dashboard') renderDashboard();
   if (name === 'orders') renderOrders();
-  if (name === 'order-status') renderOrderStatusPage();
-  if (name === 'reservas') renderReservas();
   if (name === 'buyers') renderBuyers();
   if (name === 'stock') renderStockReview();
   if (name === 'unpaid-stock') renderUnpaidStock();
   if (name === 'shipping-plan') renderShippingPlan();
   if (name === 'tracking') renderTracking();
   if (name === 'correios') renderCorreios();
-}
-
-function showStatusPage(status, el) {
-  currentStatusPage = status;
-  showPage('order-status', el);
 }
 
 // â”€â”€â”€ MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -2053,7 +1817,7 @@ function getProductsFromForm() {
   return products;
 }
 
-async function saveOrder() {
+function saveOrder() {
   const buyer = document.getElementById('f-buyer').value.trim();
   if (!buyer) { notify('âš ï¸ Nome do comprador obrigatÃ³rio'); return; }
 
@@ -2063,24 +1827,20 @@ async function saveOrder() {
   const total = products.reduce((s, p) => s + p.price, 0);
   const existingOrder = editingId ? orders.find(x => x.id === editingId) : null;
 
-  const newStatus = document.getElementById('f-status').value;
   const order = {
-    ...(existingOrder || {}),
     id: editingId || genId(),
     buyer,
     username: document.getElementById('f-username').value.trim(),
     platform: existingOrder?.platform || existingOrder?.payment || 'Manual',
     payment: existingOrder?.payment || existingOrder?.platform || 'Manual',
     date: document.getElementById('f-date').value,
-    status: newStatus,
+    status: document.getElementById('f-status').value,
     address: document.getElementById('f-address').value.trim(),
     notes: document.getElementById('f-notes').value.trim(),
     products,
     total,
-    gmail: existingOrder?.gmail,
-    statusHistory: existingOrder?.statusHistory || []
+    gmail: existingOrder?.gmail
   };
-  if (existingOrder) recordStatusChange(order, existingOrder.status || '', newStatus, 'edicao manual');
 
   if (editingId) {
     const idx = orders.findIndex(x => x.id === editingId);
@@ -2092,139 +1852,52 @@ async function saveOrder() {
   }
 
   save();
-  if (supabaseReady) {
-    try {
-      await upsertOrdersToSupabase([order]);
-    } catch (err) {
-      console.error(err);
-      notify('Encomenda guardada localmente; falhou sync online');
-    }
-  }
   closeModal();
   refreshAll();
 }
 
-async function deleteOrder(id) {
+function deleteOrder(id) {
   if (!confirm('Apagar esta encomenda?')) return;
   orders = orders.filter(x => x.id !== id);
   save();
-  if (supabaseReady) {
-    try {
-      await deleteOrderFromSupabase(id);
-    } catch (err) {
-      console.error(err);
-      notify('Apagada neste browser; falhou sync online');
-    }
-  }
   refreshAll();
-  notify('Encomenda apagada');
+  notify('ðŸ—‘ï¸ Encomenda apagada');
 }
 
-const STATUS_OPTIONS = ['pendente','reservado','pago','enviado','entregue','cancelado'];
-const STATUS_ICONS = {
-  pendente: 'PN',
-  reservado: 'RS',
-  pago: 'PG',
-  enviado: 'EV',
-  entregue: 'ET',
-  cancelado: 'CN'
-};
-const STATUS_DESCRIPTIONS = {
-  pendente: 'A aguardar pagamento ou confirmacao',
-  reservado: 'Apalavrado/reservado sem dinheiro libertado',
-  pago: 'Pago e por enviar',
-  enviado: 'Em transporte',
-  entregue: 'Finalizado no comprador',
-  cancelado: 'Sem valor ativo'
-};
-
-function statusLabel(status) {
-  const labels = {
-    pendente: 'Pendente',
-    reservado: 'Reservado',
-    pago: 'Pago',
-    enviado: 'Enviado',
-    entregue: 'Entregue',
-    cancelado: 'Cancelado'
-  };
-  return labels[status] || (String(status || '').charAt(0).toUpperCase() + String(status || '').slice(1));
-}
-
-function nowIsoLocal() {
-  const d = new Date();
-  const pad = n => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function recordStatusChange(order, from, to, source) {
-  if (!order || from === to) return;
-  if (!Array.isArray(order.statusHistory)) order.statusHistory = [];
-  order.statusHistory.push({
-    at: nowIsoLocal(),
-    from: from || '',
-    to,
-    source: source || 'ERP'
-  });
-}
-
-function statusHistoryText(order) {
-  const last = Array.isArray(order.statusHistory) ? order.statusHistory[order.statusHistory.length - 1] : null;
-  return last ? `Alterado ${last.at}: ${last.from || 'sem estado'} -> ${last.to}` : 'Sem alteracoes de estado registadas';
-}
-
-async function changeStatus(id, val) {
+function changeStatus(id, val) {
   const o = orders.find(x => x.id === id);
-  if (!o) return;
-  const previous = o.status || '';
-  if (previous === val) return;
-  o.status = val;
-  recordStatusChange(o, previous, val, 'seletor ERP');
-  save();
-  if (supabaseReady) {
-    try {
-      await upsertOrdersToSupabase([o]);
-    } catch (err) {
-      console.error(err);
-      notify('Estado guardado neste browser; falhou sync online');
-    }
-  }
-  refreshAll();
-  notify(`Estado ${id}: ${statusLabel(previous)} -> ${statusLabel(val)}`);
+  if (o) { o.status = val; save(); refreshAll(); }
 }
 
 // â”€â”€â”€ RENDER HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function badgeHtml(status) {
-  return `<span class="badge badge-${status}">${statusLabel(status)}</span>`;
+  return `<span class="badge badge-${status}">${status}</span>`;
 }
 
 function urgencyRowClass(order) {
-  if (order.status === 'reservado') return 'row-urgency-pendente';
   if (order.status === 'pago') return 'row-urgency-pago';
   if (order.status === 'pendente') return 'row-urgency-pendente';
   return '';
 }
 
 function urgencyLabelHtml(order) {
-  if (order.status === 'reservado') return '<span class="urgency-label wait">Reservado</span>';
   if (order.status === 'pago') return '<span class="urgency-label ship">Por enviar</span>';
   if (order.status === 'pendente') return '<span class="urgency-label wait">A aguardar</span>';
   return '';
 }
 
-function statusSelect(id, current, order) {
-  return `<select class="status-select" title="${order ? statusHistoryText(order) : 'Alterar estado'}" onchange="changeStatus('${id}', this.value)">
-    ${STATUS_OPTIONS.map(s => `<option value="${s}" ${s===current?'selected':''}>${statusLabel(s)}</option>`).join('')}
+function statusSelect(id, current) {
+  const opts = ['pendente','pago','enviado','entregue','cancelado'];
+  return `<select class="status-select" onchange="changeStatus('${id}', this.value)">
+    ${opts.map(s => `<option value="${s}" ${s===current?'selected':''}>${s}</option>`).join('')}
   </select>`;
 }
 
 function refreshAll() {
   updateHeader();
-  renderStatusNav();
   const active = document.querySelector('.page.active').id.replace('page-','');
   if (active === 'dashboard') renderDashboard();
   if (active === 'orders') renderOrders();
-  if (active === 'order-status') renderOrderStatusPage();
-  if (active === 'reservas') renderReservas();
   if (active === 'buyers') renderBuyers();
   if (active === 'stock') renderStockReview();
   if (active === 'unpaid-stock') renderUnpaidStock();
@@ -2235,7 +1908,7 @@ function refreshAll() {
 
 function updateHeader() {
   const revenue = orders.filter(o => o.status !== 'cancelado').reduce((s,o) => s + o.total, 0);
-  const pending = orders.filter(o => ['pendente','reservado'].includes(o.status)).length;
+  const pending = orders.filter(o => o.status === 'pendente').length;
   const toShipMoney = orders.filter(o => o.status === 'pago').reduce((s,o) => s + o.total, 0);
   document.getElementById('hdr-total').textContent = orders.length;
   document.getElementById('hdr-revenue').textContent = revenue.toFixed(0) + '€';
@@ -2245,34 +1918,13 @@ function updateHeader() {
 }
 
 // â”€â”€â”€ DASHBOARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function renderStatusNav() {
-  const el = document.getElementById('status-nav-items');
-  if (!el) return;
-  const activePage = document.querySelector('.page.active')?.id || '';
-  el.innerHTML = STATUS_OPTIONS.map(status => {
-    const list = orders.filter(o => o.status === status);
-    const total = list.reduce((s, o) => s + Number(o.total || 0), 0);
-    const active = activePage === 'page-order-status' && currentStatusPage === status ? ' active' : '';
-    return `
-      <div class="nav-item nav-status-item${active}" onclick="showStatusPage('${status}', this)">
-        <span class="nav-icon">${STATUS_ICONS[status] || status.slice(0,2).toUpperCase()}</span>
-        <span class="nav-status-copy">
-          <span class="nav-status-title">${statusLabel(status)}</span>
-          <span class="nav-status-meta">${list.length} enc. / ${total.toFixed(0)}EUR</span>
-        </span>
-        <span class="status-total-chip">${total.toFixed(0)}EUR</span>
-      </div>
-    `;
-  }).join('');
-}
-
 function renderDashboard() {
   updateHeader();
   const active = orders.filter(o => o.status !== 'cancelado');
   const revenue = active.reduce((s,o) => s + o.total, 0);
   const envios = orders.filter(o => o.status === 'enviado').length;
   const entregues = orders.filter(o => o.status === 'entregue').length;
-  const pendentes = orders.filter(o => ['pendente','reservado'].includes(o.status)).length;
+  const pendentes = orders.filter(o => o.status === 'pendente').length;
   const pagos = orders.filter(o => o.status === 'pago').length;
   const valorPorEnviar = orders.filter(o => o.status === 'pago').reduce((s,o) => s + o.total, 0);
   const selectedStatus = document.getElementById('dashboard-status-total')?.value || '';
@@ -2325,7 +1977,7 @@ function renderDashboard() {
       <td><div class="buyer-name">${o.buyer}</div>${o.username ? `<div style="color:var(--muted);font-size:11px;">${o.username}</div>` : ''}</td>
       <td>${o.products.map(p => `<span class="product-tag">${p.name}</span>`).join('')}</td>
       <td class="price">${o.total.toFixed(2)}€</td>
-      <td>${statusSelect(o.id, o.status, o)}${urgencyLabelHtml(o)}</td>
+      <td>${badgeHtml(o.status)}${urgencyLabelHtml(o)}</td>
       <td style="color:var(--muted)">${o.date}</td>
       <td>${gmailLinksHtml(o)}</td>
     </tr>
@@ -2364,7 +2016,7 @@ function renderOrders() {
       <td style="color:var(--muted)">${o.username||'â€”'}</td>
       <td>${o.products.map(p => `<span class="product-tag">${p.name} <span style="color:var(--accent)">${p.price.toFixed(2)}€</span></span>`).join('')}</td>
       <td class="price">${o.total.toFixed(2)}€</td>
-      <td>${statusSelect(o.id, o.status, o)}${urgencyLabelHtml(o)}</td>
+      <td>${statusSelect(o.id, o.status)}${urgencyLabelHtml(o)}</td>
       <td style="color:var(--muted)">${o.date}</td>
       <td>${gmailLinksHtml(o)}</td>
       <td class="notes-cell" title="${o.notes||''}">${o.notes||'â€”'}</td>
@@ -2469,7 +2121,7 @@ function stockItemsForProduct(product) {
 let selectedStockKey = '';
 
 function buildStockRows() {
-  const stockStatuses = ['pendente', 'reservado', 'pago'];
+  const stockStatuses = ['pendente', 'pago'];
   const relevant = orders.filter(o => stockStatuses.includes(o.status));
   const buckets = {};
 
@@ -2523,7 +2175,7 @@ function renderStockDetail(row) {
           <div class="stock-detail-meta">
             <span class="order-id">${order.id}</span>
             ${platformBadgeHtml(order)}
-            ${statusSelect(order.id, order.status, order)}
+            ${badgeHtml(order.status)}
             <span style="color:var(--muted); font-size:12px;">${order.date}</span>
           </div>
           <div style="display:grid; grid-template-columns:minmax(160px, 1fr) auto; gap:10px; align-items:start;">
@@ -2584,148 +2236,7 @@ function pendingNextStep(order) {
   if (note.includes('alioshop')) return 'Aguardar pagamento em 08/05/2026.';
   if (note.includes('fredericobranco10')) return 'Confirmar prata; se aceitar, finalizar compra por 115 EUR.';
   if (note.includes('susanalucas7676')) return 'Repor/reservar link em 08/05/2026 para pagamento de 50 EUR.';
-  if (note.includes('ivolandia10')) return 'Aguardar chamada/combinacao antes de libertar pagamento.';
   return order.notes || 'Aguardar pagamento/confirmacao.';
-}
-
-function productListHtml(order, withUnitPrice = false) {
-  return (order.products || []).map(p => {
-    const qty = Number(p.qty || 1);
-    const price = Number(p.price || 0);
-    const qtyLabel = qty > 1 ? `${qty}x ` : '';
-    const unit = qty > 1 ? price / qty : price;
-    const priceHtml = withUnitPrice ? ` <span style="color:var(--accent)">${unit.toFixed(2)}EUR/un</span>` : '';
-    return `<span class="product-tag">${qtyLabel}${p.name}${priceHtml}</span>`;
-  }).join('');
-}
-
-function unitValuesHtml(order) {
-  return (order.products || []).map(p => {
-    const qty = Number(p.qty || 1);
-    const price = Number(p.price || 0);
-    const unit = qty > 1 ? price / qty : price;
-    return `<span class="product-tag">${unit.toFixed(2)}EUR${qty > 1 ? ` x ${qty}` : ''}</span>`;
-  }).join('');
-}
-
-function renderOrderStatusPage() {
-  const status = currentStatusPage || 'pendente';
-  const list = orders.filter(o => o.status === status);
-  const total = list.reduce((s, o) => s + Number(o.total || 0), 0);
-  const units = list.reduce((s, o) => s + (o.products || []).reduce((pSum, p) => pSum + Number(p.qty || 1), 0), 0);
-  const avg = list.length ? total / list.length : 0;
-
-  document.getElementById('status-page-title').textContent = `Estado: ${statusLabel(status)}`;
-  document.getElementById('status-page-sub').textContent = STATUS_DESCRIPTIONS[status] || 'Resumo financeiro por estado da encomenda';
-  document.getElementById('status-kpis').innerHTML = `
-    <div class="kpi-card k1">
-      <div class="kpi-label">Encomendas</div>
-      <div class="kpi-val">${list.length}</div>
-    </div>
-    <div class="kpi-card k2">
-      <div class="kpi-label">Total neste estado</div>
-      <div class="kpi-val">${total.toFixed(2)}EUR</div>
-    </div>
-    <div class="kpi-card k3">
-      <div class="kpi-label">Unidades/artigos</div>
-      <div class="kpi-val">${units}</div>
-    </div>
-    <div class="kpi-card k4">
-      <div class="kpi-label">Media por encomenda</div>
-      <div class="kpi-val">${avg.toFixed(2)}EUR</div>
-    </div>
-  `;
-
-  const tb = document.getElementById('status-orders-table');
-  if (!list.length) {
-    tb.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-text">Nao ha encomendas em ${statusLabel(status).toLowerCase()}</div></div></td></tr>`;
-    renderStatusNav();
-    return;
-  }
-
-  tb.innerHTML = sortOrders(list, 'orders').map(o => `
-    <tr class="${urgencyRowClass(o)}">
-      <td class="order-id">${o.id}</td>
-      <td><div class="buyer-name">${o.buyer}</div>${o.username ? `<div style="color:var(--muted);font-size:11px;">${o.username}</div>` : ''}</td>
-      <td>${platformBadgeHtml(o)}</td>
-      <td>${productListHtml(o, true)}</td>
-      <td>${unitValuesHtml(o)}</td>
-      <td class="price">${Number(o.total || 0).toFixed(2)}EUR</td>
-      <td>${statusSelect(o.id, o.status, o)}</td>
-      <td class="notes-cell" style="max-width:360px;" title="${o.notes || ''}">${o.status === 'pendente' || o.status === 'reservado' ? pendingNextStep(o) : (o.notes || '-')}</td>
-    </tr>
-  `).join('') + `
-    <tr>
-      <td colspan="5" style="text-align:right;font-weight:800;">Total ${statusLabel(status)}</td>
-      <td class="price" style="font-weight:800;">${total.toFixed(2)}EUR</td>
-      <td colspan="2"></td>
-    </tr>
-  `;
-  renderStatusNav();
-}
-
-function isReservationOrder(order) {
-  if (order.status === 'reservado') return true;
-  if (order.status !== 'pendente') return false;
-  const text = normalizeText(`${order.buyer || ''} ${order.username || ''} ${order.address || ''} ${order.notes || ''}`);
-  return [
-    'reserv',
-    'apalavr',
-    'pagamento previsto',
-    'sem pagamento',
-    'ainda nao',
-    'so na',
-    'receber',
-    'confirmar',
-    'potencial cliente',
-    'liga',
-    'link sera reposto'
-  ].some(token => text.includes(token));
-}
-
-function renderReservas() {
-  const list = orders.filter(isReservationOrder);
-  const total = list.reduce((s, o) => s + Number(o.total || 0), 0);
-  const clients = new Set(list.map(o => (o.buyer || '').toLowerCase())).size;
-
-  document.getElementById('reservas-kpis').innerHTML = `
-    <div class="kpi-card k1">
-      <div class="kpi-label">Clientes em espera</div>
-      <div class="kpi-val">${clients}</div>
-    </div>
-    <div class="kpi-card k2">
-      <div class="kpi-label">Total apalavrado</div>
-      <div class="kpi-val">${total.toFixed(2)}EUR</div>
-    </div>
-    <div class="kpi-card k4">
-      <div class="kpi-label">Encomendas</div>
-      <div class="kpi-val">${list.length}</div>
-    </div>
-  `;
-
-  const tb = document.getElementById('reservas-table');
-  if (!list.length) {
-    tb.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-text">Sem reservas ou vendas apalavradas neste momento</div></div></td></tr>';
-    return;
-  }
-
-  tb.innerHTML = sortOrders(list, 'orders').map(o => `
-    <tr class="${urgencyRowClass(o)}">
-      <td><div class="buyer-name">${o.buyer}</div>${o.username ? `<div style="color:var(--muted);font-size:11px;">${o.username}</div>` : ''}</td>
-      <td>${productListHtml(o, true)}</td>
-      <td>${unitValuesHtml(o)}</td>
-      <td class="price">${Number(o.total || 0).toFixed(2)}EUR</td>
-      <td class="notes-cell" style="max-width:420px;" title="${o.notes || ''}">${pendingNextStep(o)}</td>
-      <td>${statusSelect(o.id, o.status, o)}</td>
-      <td style="color:var(--muted)">${o.date}</td>
-    </tr>
-  `).join('') + `
-    <tr>
-      <td colspan="3" style="text-align:right;font-weight:800;">Total da seccao</td>
-      <td class="price" style="font-weight:800;">${total.toFixed(2)}EUR</td>
-      <td colspan="3"></td>
-    </tr>
-  `;
 }
 
 function stockSummaryForOrders(list) {
@@ -2747,7 +2258,7 @@ function stockSummaryForOrders(list) {
 }
 
 function renderUnpaidStock() {
-  const list = orders.filter(o => ['pendente','reservado'].includes(o.status));
+  const list = orders.filter(o => o.status === 'pendente');
   const total = list.reduce((s, o) => s + o.total, 0);
   const summary = stockSummaryForOrders(list);
 
@@ -2777,7 +2288,7 @@ function renderUnpaidStock() {
 
   const tb = document.getElementById('unpaid-stock-table');
   if (!list.length) {
-    tb.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-text">Nao ha encomendas pendentes</div></div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-text">Nao ha encomendas pendentes</div></div></td></tr>';
     return;
   }
 
@@ -2787,7 +2298,6 @@ function renderUnpaidStock() {
       <td><div class="buyer-name">${o.buyer}</div>${o.username ? `<div style="color:var(--muted);font-size:11px;">${o.username}</div>` : ''}</td>
       <td>${platformBadgeHtml(o)}</td>
       <td class="price">${o.total.toFixed(2)}€</td>
-      <td>${statusSelect(o.id, o.status, o)}</td>
       <td>${(o.products || []).map(p => `<span class="product-tag">${p.qty && p.qty > 1 ? p.qty + 'x ' : ''}${p.name}</span>`).join('')}</td>
       <td class="notes-cell" style="max-width:360px;" title="${o.notes || ''}">${pendingNextStep(o)}</td>
     </tr>
@@ -2822,7 +2332,7 @@ function renderShippingPlan() {
 
   const tb = document.getElementById('shipping-plan-table');
   if (!list.length) {
-    tb.innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-text">Nao ha encomendas pagas por enviar</div></div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-text">Nao ha encomendas pagas por enviar</div></div></td></tr>';
     return;
   }
 
@@ -2833,7 +2343,6 @@ function renderShippingPlan() {
       <td><div class="buyer-name">${o.buyer}</div>${o.username ? `<div style="color:var(--muted);font-size:11px;">${o.username}</div>` : ''}</td>
       <td>${(o.products || []).map(p => `<span class="product-tag">${p.qty && p.qty > 1 ? p.qty + 'x ' : ''}${p.name}</span>`).join('')}</td>
       <td class="price">${o.total.toFixed(2)}€</td>
-      <td>${statusSelect(o.id, o.status, o)}</td>
       <td><span class="route-pill">${o.address || 'Confirmar envio'}</span>${o.tracking ? `<div style="margin-top:5px;">${trackingLinkHtml(o)}</div>` : ''}</td>
       <td>${labelActionHtml(o)}</td>
       <td class="notes-cell" style="max-width:280px;" title="${o.notes || ''}">${o.notes || '—'}</td>
@@ -2912,7 +2421,7 @@ function renderTracking() {
         <td class="order-id">${o.id}</td>
         <td><div class="buyer-name">${o.buyer}</div>${o.username ? `<div style="color:var(--muted);font-size:11px;">${o.username}</div>` : ''}</td>
         <td>${platformBadgeHtml(o)}</td>
-        <td>${statusSelect(o.id, o.status, o)}</td>
+        <td>${badgeHtml(o.status)}</td>
         <td>${trackingLinkHtml(o)}</td>
         <td>${info.statusText || (o.status === 'entregue' ? 'Entregue' : 'Sem update')}</td>
         <td>${info.expectedDelivery || 'Sem estimativa'}</td>
@@ -2937,7 +2446,7 @@ function renderTracking() {
           <td><div class="buyer-name">${o.buyer}</div></td>
           <td>${info.product || productNames(o)}</td>
           <td class="price">${Number(o.total || 0).toFixed(2)}€</td>
-          <td>${statusSelect(o.id, o.status, o)}</td>
+          <td>${badgeHtml(o.status)}</td>
         </tr>
       `;
     }).join('') + `
@@ -2971,7 +2480,7 @@ function renderCorreios() {
         <div style="text-align:right;">
           <div class="order-id">${o.id}</div>
           <div style="color:var(--muted); font-size:12px; margin-top:2px;">${o.date}</div>
-          <div style="margin-top:4px;">${statusSelect(o.id, o.status, o)}</div>
+          <div style="margin-top:4px;">${badgeHtml(o.status)}</div>
           <div style="margin-top:8px;">${gmailLinksHtml(o)}</div>
         </div>
       </div>
@@ -3026,68 +2535,13 @@ function notify(msg) {
   setTimeout(() => el.classList.remove('show'), 2500);
 }
 
-function downloadTextFile(filename, content, type = 'text/plain') {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-async function downloadGithubHtml() {
-  const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
-  const dataset = JSON.stringify(orders, null, 4);
-  try {
-    const response = await fetch(window.location.href, { cache: 'no-store' });
-    let html = await response.text();
-    const version = `marketplace-online-mobile-export-${stamp}-local-status-sync`;
-    html = html.replace(/const DATASET_VERSION = '[^']+';/, `const DATASET_VERSION = 'marketplace-online-mobile-export-2026-05-08-supabase-sync-v10';`);
-    html = html.replace(/const realOrders = \[[\s\S]*?\n\];\n\n  orders = realOrders;/, `const realOrders = ${dataset};\n\n  orders = realOrders;`);
-    downloadTextFile('vinted-erp-real-github-ready.html', html, 'text/html;charset=utf-8');
-    notify('HTML exportado com estados atuais para publicar no GitHub');
-  } catch (err) {
-    downloadTextFile(`vinted-orders-${stamp}.json`, dataset, 'application/json;charset=utf-8');
-    notify('Dataset exportado; o browser bloqueou a leitura do HTML local');
-  }
-}
-
 // â”€â”€â”€ INIT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 updateHeader();
-renderStatusNav();
 renderDashboard();
 
 // Dados reais extraidos do Gmail Vinted e Wallapop em 06/05/2026.
 if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== DATASET_VERSION) {
   const realOrders = [
-    {
-        "id": "VTD-014",
-        "date": "2026-05-08",
-        "buyer": "Ivo",
-        "username": "ivolandia10",
-        "email": "ivolandia10@vinted.local",
-        "phone": "910557818",
-        "address": "Vinted - potencial cliente; ligar domingo a caminho de Almada",
-        "products": [
-            {
-                "name": "Pulseira Prata Indiana 82g",
-                "qty": 1,
-                "price": 50
-            }
-        ],
-        "total": 50,
-        "status": "pendente",
-        "payment": "Vinted",
-        "platform": "Vinted",
-        "tracking": "",
-        "notes": "Lead adicionado a partir de screenshot Vinted em 08/05/2026. Utilizador ivolandia10; nome indicado: Ivo; telefone: 910557818. Produto: Pulseira Prata Indiana 82g, 50,00 EUR; subtotal comprador 53,20 EUR. Disse que no domingo, 10/05/2026, quando estiver a caminho de Almada, liga para combinar, por volta das 15h ou 16h. Potencial cliente com boa taxa de conversao; sem pagamento/etiqueta ainda.",
-        "gmail": {
-            "query": "from:no-reply@vinted.pt ivolandia10 \"Pulseira Prata Indiana 82g\""
-        }
-    },
     {
         "id": "VTD-013",
         "date": "2026-05-07",
@@ -3180,6 +2634,30 @@ if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== 
         "notes": "Encomenda adicionada a partir de screenshot Vinted em 07/05/2026. Pagamento previsto para 08/05/2026. Conjunto: 4 artigos; total vendedor 165,00 EUR; subtotal para comprador 173,95 EUR. Sem email de venda/etiqueta ainda. Alioshop cre receber amanha, 08/05/2026, e devera fazer o pagamento nessa altura.",
         "gmail": {
             "query": "from:no-reply@vinted.pt \"4 artigos\" \"165,00\""
+        }
+    },
+    {
+        "id": "WLP-002",
+        "date": "2026-05-08",
+        "buyer": "Ivan",
+        "email": "ivan@wallapop.local",
+        "phone": "",
+        "address": "Wallapop - enviar a partir de um ponto de entrega",
+        "products": [
+            {
+                "name": "Colar Prata India 48,24 cm",
+                "qty": 1,
+                "price": 50
+            }
+        ],
+        "total": 50,
+        "status": "pendente",
+        "payment": "Wallapop",
+        "platform": "Wallapop",
+        "tracking": "",
+        "notes": "Fonte Wallapop: confirmacao de venda em 08/05/2026. Dinheiro fica congelado e seguro ate confirmacao do comprador. Enviar a partir de ponto de entrega. Sem etiqueta/tracking no email.",
+        "gmail": {
+            "query": "from:info@wallapop.com Ivan \"Colar Prata\" \"50,00\""
         }
     },
     {
@@ -3481,27 +2959,12 @@ if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== 
     }
 ];
 
-  const savedOrders = Array.isArray(orders) ? orders : [];
-  const savedById = Object.fromEntries(savedOrders.map(o => [o.id, o]));
-  orders = realOrders.map(order => {
-    const saved = savedById[order.id];
-    return saved ? {
-      ...order,
-      status: saved.status || order.status,
-      statusHistory: saved.statusHistory || order.statusHistory || []
-    } : order;
-  });
-  savedOrders
-    .filter(saved => saved.id && !orders.some(order => order.id === saved.id))
-    .forEach(saved => orders.push(saved));
+  orders = realOrders;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
   localStorage.setItem('vinted_orders_dataset_version', DATASET_VERSION);
   updateHeader();
-  renderStatusNav();
   renderDashboard();
 }
-
-initSupabaseSync();
 </script>
 </body>
 </html>

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atelier Ads CRM</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <strong>Atelier Ads</strong>
+          <span>Vinted · Wallapop · OLX</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Navegação principal">
+        <button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button>
+        <button class="nav-item" data-view="generator"><span>✦</span>Gerador</button>
+        <button class="nav-item" data-view="responses"><span>↗</span>Respostas</button>
+        <button class="nav-item" data-view="saved"><span>▣</span>Anúncios</button>
+        <button class="nav-item" data-view="crm"><span>◌</span>Mini CRM</button>
+        <button class="nav-item" data-view="library"><span>★</span>Biblioteca</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="seedDemo" class="ghost-btn">Restaurar base inicial</button>
+        <button id="exportAllJson" class="ghost-btn">Exportar tudo</button>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Central semi-automática de vendas</p>
+          <h1 id="pageTitle">Dashboard</h1>
+        </div>
+        <div class="top-actions">
+          <label class="search-box">
+            <span>⌕</span>
+            <input id="globalSearch" type="search" placeholder="Pesquisar anúncios, respostas, compradores">
+          </label>
+          <button id="themeToggle" class="icon-btn" title="Alternar tema">☾</button>
+        </div>
+      </header>
+
+      <section id="dashboard" class="view active">
+        <div class="metric-grid" id="metricGrid"></div>
+        <div class="dashboard-grid">
+          <section class="panel wide">
+            <div class="panel-head">
+              <h2>Performance por plataforma</h2>
+              <button class="small-btn" data-export="csv">CSV</button>
+            </div>
+            <canvas id="platformChart" height="160"></canvas>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Peças com mais interesse</h2>
+            </div>
+            <div id="interestList" class="rank-list"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Atividade recente</h2>
+            </div>
+            <div id="activityList" class="activity-list"></div>
+          </section>
+          <section class="panel wide">
+            <div class="panel-head">
+              <h2>Métricas de conversão</h2>
+            </div>
+            <div id="conversionMetrics" class="insight-grid"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="generator" class="view">
+        <div class="workspace-grid">
+          <form id="listingForm" class="panel form-panel">
+            <div class="panel-head">
+              <h2>Novo anúncio</h2>
+              <button type="button" id="clearForm" class="small-btn">Limpar</button>
+            </div>
+            <div class="form-grid">
+              <label>Plataforma<select name="platform"></select></label>
+              <label>Tipo de peça<select name="type"></select></label>
+              <label>Peso em gramas<input name="weight" type="number" min="0" step="1" placeholder="82"></label>
+              <label>Medida em cm<input name="measure" type="number" min="0" step="0.5" placeholder="48"></label>
+              <label>Estado<select name="condition"></select></label>
+              <label>Preço pretendido<input name="targetPrice" type="number" min="0" step="1" placeholder="49"></label>
+              <label>Preço mínimo aceitável<input name="minPrice" type="number" min="0" step="1" placeholder="39"></label>
+              <label>Material<select name="material"></select></label>
+              <label>Confirmado por ourives?<select name="confirmed"></select></label>
+              <label>Marcação 925?<select name="mark925"></select></label>
+              <label>Estilo principal<select name="style"></select></label>
+              <label>Link do anúncio original<input name="sourceUrl" type="url" placeholder="https://"></label>
+              <label class="full">Links de fotos<textarea name="photoLinks" rows="3" placeholder="Um link por linha"></textarea></label>
+              <label class="full">Upload/local preview de imagens<input id="imageInput" type="file" accept="image/*" multiple></label>
+              <label class="full">Notas adicionais<textarea name="notes" rows="4" placeholder="Detalhes, fecho, textura, história, defeitos..."></textarea></label>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">Gerar e guardar</button>
+              <button type="button" id="generateOnly" class="secondary-btn">Gerar sem guardar</button>
+            </div>
+          </form>
+
+          <div class="stack">
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Segurança</h2>
+              </div>
+              <div id="safetyBox" class="safety-box"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Fotos</h2>
+                <button id="clearImages" class="small-btn">Limpar</button>
+              </div>
+              <div id="photoPreview" class="photo-grid"></div>
+              <ol id="photoStrategy" class="photo-strategy"></ol>
+            </section>
+          </div>
+        </div>
+
+        <section class="panel results-panel">
+          <div class="panel-head">
+            <h2>Resultados inteligentes</h2>
+            <button id="copyGenerated" class="small-btn">Copiar tudo</button>
+          </div>
+          <div id="generatedResults" class="results-grid"></div>
+        </section>
+      </section>
+
+      <section id="responses" class="view">
+        <div class="workspace-grid">
+          <section class="panel form-panel">
+            <div class="panel-head">
+              <h2>Resposta rápida</h2>
+            </div>
+            <div class="form-grid">
+              <label>Mensagem recebida<textarea id="buyerMessage" rows="6" placeholder="Cole aqui a mensagem do comprador"></textarea></label>
+              <label>Idioma<select id="responseLang"></select></label>
+              <label>Tom<select id="responseTone"></select></label>
+              <label>Artigo associado<select id="responseListing"></select></label>
+              <label>Nome comprador<input id="buyerName" placeholder="Opcional"></label>
+              <label>Resultado<select id="conversationResult"></select></label>
+            </div>
+            <div class="form-actions">
+              <button id="detectIntent" class="primary-btn">Detetar e gerar</button>
+              <button id="saveConversation" class="secondary-btn">Guardar no CRM</button>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Intenção</h2>
+            </div>
+            <div id="intentBox" class="intent-box"></div>
+          </section>
+        </div>
+        <section class="panel results-panel">
+          <div class="panel-head">
+            <h2>Sugestões de resposta</h2>
+            <button id="variantResponses" class="small-btn">Gerar variantes</button>
+          </div>
+          <div id="responseResults" class="results-grid"></div>
+        </section>
+      </section>
+
+      <section id="saved" class="view">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Anúncios guardados</h2>
+            <div class="inline-actions">
+              <select id="statusFilter"></select>
+              <button id="exportListingsJson" class="small-btn">JSON</button>
+              <button id="exportListingsCsv" class="small-btn">CSV</button>
+            </div>
+          </div>
+          <div id="savedListings" class="listing-grid"></div>
+        </div>
+      </section>
+
+      <section id="crm" class="view">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Histórico de conversas</h2>
+            <button id="exportCrmCsv" class="small-btn">CSV</button>
+          </div>
+          <div id="crmTable" class="table-wrap"></div>
+        </div>
+      </section>
+
+      <section id="library" class="view">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Biblioteca de respostas</h2>
+            <button id="exportLibraryJson" class="small-btn">JSON</button>
+          </div>
+          <div id="responseLibrary" class="library-grid"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

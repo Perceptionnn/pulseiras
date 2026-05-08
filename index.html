@@ -746,6 +746,75 @@
   .kpi-card.k4::before { background: var(--yellow); }
   .kpi-card.k5::before { background: var(--green); }
 
+  .revolut-alert {
+    display: none;
+    border: 1px solid rgba(200,242,90,0.42);
+    border-left: 5px solid var(--accent);
+    border-radius: var(--radius);
+    background: linear-gradient(90deg, rgba(200,242,90,0.15), rgba(124,92,252,0.08));
+    padding: 16px 18px;
+    margin: 0 0 22px;
+  }
+
+  .revolut-alert.show {
+    display: block;
+  }
+
+  .revolut-alert-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .revolut-alert-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+  }
+
+  .revolut-alert-sub {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .revolut-alert-total {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .revolut-alert-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .revolut-alert-item {
+    display: grid;
+    grid-template-columns: minmax(70px, 90px) minmax(120px, 1fr) minmax(100px, 160px) minmax(80px, 110px) minmax(70px, 90px);
+    gap: 12px;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    background: rgba(15,14,19,0.52);
+    padding: 10px 12px;
+  }
+
+  .revolut-alert-item strong {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .revolut-alert-when {
+    color: var(--accent);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+
   .kpi-label {
     font-size: 11px;
     text-transform: uppercase;
@@ -1228,6 +1297,8 @@
 
       <div class="cards-grid" id="kpi-grid"></div>
 
+      <div class="revolut-alert" id="dashboard-revolut-alert"></div>
+
       <div class="page-title" style="font-size:18px; margin-bottom:16px;">Encomendas Recentes</div>
       <div class="table-wrap">
         <table>
@@ -1418,6 +1489,8 @@
       <div class="page-sub">Acompanhamento das encomendas ja enviadas com informacao recolhida dos emails Vinted</div>
 
       <div class="cards-grid" id="tracking-kpis"></div>
+
+      <div class="revolut-alert" id="tracking-revolut-alert"></div>
 
       <div class="table-wrap">
         <table>
@@ -1619,9 +1692,82 @@ function addDays(date, days) {
   return next;
 }
 
+function startOfDay(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return null;
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function rangesOverlap(aStart, aEnd, bStart, bEnd) {
+  return aStart <= bEnd && aEnd >= bStart;
+}
+
 function trackingEta(order) {
   const info = order.trackingInfo || {};
   return parseExpectedDeliveryRange(info.expectedDelivery || '');
+}
+
+function revolutArrivalAlerts() {
+  const today = startOfDay(new Date());
+  const tomorrow = addDays(today, 1);
+  return orders
+    .filter(o => o.status === 'enviado')
+    .map(o => {
+      const eta = trackingEta(o);
+      if (!eta) return null;
+      const start = startOfDay(eta.start);
+      const end = startOfDay(eta.end);
+      if (!rangesOverlap(start, end, today, tomorrow)) return null;
+      const when = rangesOverlap(start, end, today, today) ? 'Hoje' : 'Amanha';
+      return { order: o, eta, when };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.eta.end - b.eta.end);
+}
+
+function renderRevolutAlertPanel(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const alerts = revolutArrivalAlerts();
+  if (!alerts.length) {
+    el.classList.remove('show');
+    el.innerHTML = '';
+    return;
+  }
+
+  const total = alerts.reduce((sum, item) => sum + Number(item.order.total || 0), 0);
+  el.classList.add('show');
+  el.innerHTML = `
+    <div class="revolut-alert-head">
+      <div>
+        <div class="revolut-alert-title">Transferencia Revolut prevista entre hoje e amanha</div>
+        <div class="revolut-alert-sub">Calculado pelas encomendas enviadas cuja estimativa de chegada ao destino cruza hoje ou amanha.</div>
+      </div>
+      <div class="revolut-alert-total">${total.toFixed(2)}€</div>
+    </div>
+    <div class="revolut-alert-list">
+      ${alerts.map(({ order, eta, when }) => `
+        <div class="revolut-alert-item">
+          <span class="order-id">${order.id}</span>
+          <strong>${order.buyer}</strong>
+          <span>${formatDatePt(eta.start)} - ${formatDatePt(eta.end)}</span>
+          <span class="price">${Number(order.total || 0).toFixed(2)}€</span>
+          <span class="revolut-alert-when">${when}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function notifyRevolutAlertsOnce() {
+  const alerts = revolutArrivalAlerts();
+  if (!alerts.length) return;
+  const todayKey = startOfDay(new Date()).toISOString().slice(0, 10);
+  const alertKey = alerts.map(item => item.order.id).join('|');
+  const storageKey = `vinted_revolut_alert_${todayKey}_${alertKey}`;
+  if (localStorage.getItem(storageKey)) return;
+  const total = alerts.reduce((sum, item) => sum + Number(item.order.total || 0), 0);
+  notify(`Revolut: ${total.toFixed(2)}€ devera cair entre hoje e amanha`);
+  localStorage.setItem(storageKey, '1');
 }
 
 function trackingEtaSortValue(order) {
@@ -1981,6 +2127,8 @@ function renderDashboard() {
       <div class="kpi-val">${selectedStatusValue.toFixed(2)}€</div>
     </div>
   `;
+  renderRevolutAlertPanel('dashboard-revolut-alert');
+  notifyRevolutAlertsOnce();
 
   const recent = sortOrders(orders, 'dashboard').slice(0, 8);
   const tb = document.getElementById('dash-table');
@@ -2426,6 +2574,8 @@ function renderTracking() {
       <div class="kpi-val">${revolutForecastValue.toFixed(2)}€</div>
     </div>
   `;
+  renderRevolutAlertPanel('tracking-revolut-alert');
+  notifyRevolutAlertsOnce();
 
   updateSortIndicators('tracking');
   const tb = document.getElementById('tracking-table');

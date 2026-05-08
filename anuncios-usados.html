@@ -148,6 +148,7 @@
 
     .photo-grid a {
       display: block;
+      position: relative;
       border: 1px solid var(--line);
       border-radius: 8px;
       overflow: hidden;
@@ -160,6 +161,26 @@
       height: 100%;
       display: block;
       object-fit: cover;
+    }
+
+    .photo-chip {
+      position: absolute;
+      left: 7px;
+      bottom: 7px;
+      max-width: calc(100% - 14px);
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: rgba(21, 63, 58, 0.9);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .photo-chip.soft {
+      background: rgba(93, 100, 112, 0.9);
     }
 
     .field-label {
@@ -316,10 +337,10 @@ Combina muito bem com estilos vintage, alternativo, rock, casual ou streetwear.<
             <div>
               <p class="field-label">Fotos para usar</p>
               <div class="photo-grid">
-                <a href="assets/pulseira-grossa/pulseira-grossa-pulso.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-pulso.jpg" alt="Pulseira grossa no pulso"></a>
-                <a href="assets/pulseira-grossa/pulseira-grossa-principal.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-principal.jpg" alt="Pulseira grossa completa"></a>
-                <a href="assets/pulseira-grossa/pulseira-grossa-aberta.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-aberta.jpg" alt="Pulseira grossa aberta"></a>
-                <a href="assets/pulseira-grossa/pulseira-grossa-comprimento.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-comprimento.jpg" alt="Pulseira grossa em comprimento"></a>
+                <a href="assets/pulseira-grossa/pulseira-grossa-pulso.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-pulso.jpg" alt="Pulseira grossa no pulso"><span class="photo-chip">82g grossa</span></a>
+                <a href="assets/pulseira-grossa/pulseira-grossa-principal.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-principal.jpg" alt="Pulseira grossa completa"><span class="photo-chip">82g grossa</span></a>
+                <a href="assets/pulseira-grossa/pulseira-grossa-aberta.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-aberta.jpg" alt="Pulseira grossa aberta"><span class="photo-chip">82g grossa</span></a>
+                <a href="assets/pulseira-grossa/pulseira-grossa-comprimento.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-comprimento.jpg" alt="Pulseira grossa em comprimento"><span class="photo-chip">82g grossa</span></a>
               </div>
             </div>
             <a class="link" href="https://www.vinted.pt/items/8833777886-pulseira-prata-indiana-82g" target="_blank" rel="noopener">Ver anúncio original</a>
@@ -354,6 +375,15 @@ Peça robusta com 35g, acabamento detalhado e visual vintage/étnico muito marca
 Inspirada nas joias artesanais indianas, combina facilmente com looks boho, alternativos, rock, casual ou streetwear.
 
 Muito confortável no pulso e com ótimo impacto visual.</p>
+            </div>
+            <div>
+              <p class="field-label">Fotos para usar</p>
+              <div class="photo-grid">
+                <a href="assets/pulseira-grossa/pulseira-grossa-pulso.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-pulso.jpg" alt="Pulseira fina no pulso"><span class="photo-chip soft">35g fina</span></a>
+                <a href="assets/pulseira-grossa/pulseira-grossa-principal.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-principal.jpg" alt="Pulseira fina completa"><span class="photo-chip soft">35g fina</span></a>
+                <a href="assets/pulseira-grossa/pulseira-grossa-aberta.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-aberta.jpg" alt="Pulseira fina aberta"><span class="photo-chip soft">35g fina</span></a>
+                <a href="assets/pulseira-grossa/pulseira-grossa-comprimento.jpg" target="_blank" rel="noopener"><img src="assets/pulseira-grossa/pulseira-grossa-comprimento.jpg" alt="Pulseira fina em comprimento"><span class="photo-chip soft">35g fina</span></a>
+              </div>
             </div>
             <a class="link" href="https://www.vinted.pt/items/8849624241-pulseira-prata-india-35g" target="_blank" rel="noopener">Ver anúncio original</a>
             <div class="actions">

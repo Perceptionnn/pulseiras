@@ -94,6 +94,72 @@
       background: var(--soft);
     }
 
+    .research-link {
+      margin-bottom: 18px;
+    }
+
+    .research-link a {
+      min-height: 44px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .research-link a:hover {
+      background: var(--accent-dark);
+    }
+
+    .research {
+      margin-top: 26px;
+      padding-top: 4px;
+    }
+
+    .research h2 {
+      margin: 0 0 12px;
+      font-size: 1.4rem;
+    }
+
+    .research-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .research-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(31, 36, 40, 0.05);
+    }
+
+    .research-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+      letter-spacing: 0;
+    }
+
+    .research-card p {
+      margin: 0 0 12px;
+      color: var(--muted);
+    }
+
+    .research-card a {
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    .research-note {
+      margin: 14px 0 0;
+      color: var(--muted);
+    }
+
     .search {
       width: 100%;
       border: 1px solid var(--line);
@@ -339,6 +405,10 @@
         <a href="https://flashy.pt/my-listings" target="_blank" rel="noopener">Flashy</a>
       </nav>
 
+      <div class="research-link">
+        <a href="#plataformas-internacionais">Ver plataformas internacionais para testar</a>
+      </div>
+
       <div class="toolbar">
         <input id="search" class="search" type="search" placeholder="Pesquisar por peça, peso, estilo ou plataforma..." autocomplete="off">
         <div id="count" class="count">3 anúncios</div>
@@ -473,6 +543,42 @@ O acabamento e textura da malha dão-lhe um visual étnico/boho muito procurado 
             </div>
           </div>
         </article>
+      </section>
+
+      <section class="research" id="plataformas-internacionais" aria-label="Plataformas internacionais para testar">
+        <h2>Plataformas internacionais para testar</h2>
+        <div class="research-grid">
+          <article class="research-card">
+            <h3>1. Vestiaire Collective</h3>
+            <p>Boa para acessórios, joias, peças vintage/boho e compradores internacionais. Em muitos países trabalha com etiqueta pré-paga para o vendedor.</p>
+            <a href="https://www.vestiairecollective.com/" target="_blank" rel="noopener">Abrir Vestiaire</a>
+          </article>
+
+          <article class="research-card">
+            <h3>2. Catawiki</h3>
+            <p>Boa para testar peças como prata, vintage, artesanal ou colecionável. Funciona por leilão e pode alcançar compradores internacionais.</p>
+            <a href="https://www.catawiki.com/" target="_blank" rel="noopener">Abrir Catawiki</a>
+          </article>
+
+          <article class="research-card">
+            <h3>3. eBay</h3>
+            <p>Melhor para alcance mundial. Exige mais configuração, mas pode funcionar bem para prata, joias étnicas, Índia, boho e peças vintage.</p>
+            <a href="https://www.ebay.com/" target="_blank" rel="noopener">Abrir eBay</a>
+          </article>
+
+          <article class="research-card">
+            <h3>4. Etsy</h3>
+            <p>Boa se conseguires posicionar como vintage real, artesanal ou curadoria especial. Atenção: vintage na Etsy deve ter pelo menos 20 anos.</p>
+            <a href="https://www.etsy.com/" target="_blank" rel="noopener">Abrir Etsy</a>
+          </article>
+
+          <article class="research-card">
+            <h3>5. Depop</h3>
+            <p>Boa para público jovem, streetwear, boho e alternativo. Para Portugal pode exigir envio organizado por fora.</p>
+            <a href="https://www.depop.com/" target="_blank" rel="noopener">Abrir Depop</a>
+          </article>
+        </div>
+        <p class="research-note">Ordem prática para começares: Vinted + Vestiaire + eBay. Depois Catawiki se quiseres testar preço mais alto por leilão.</p>
       </section>
     </div>
   </main>

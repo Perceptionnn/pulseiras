@@ -80,7 +80,7 @@ function init() {
 
 function loadState() {
   const saved = localStorage.getItem(STORE_KEY);
-  if (saved) return JSON.parse(saved);
+  if (saved) return migrateState(JSON.parse(saved));
   localStorage.setItem(STORE_KEY, JSON.stringify(SEED_DATA));
   return clone(SEED_DATA);
 }
@@ -113,6 +113,8 @@ function hydrateSelects() {
   fillSelect("#responseTone", state.tones);
   fillSelect("#conversationResult", state.results);
   fillSelect("#statusFilter", ["todos", "ativo", "vendido", "pausado", "republicar"]);
+  fillSelect("#adTextPlatform", ["Todas", ...state.platforms]);
+  fillSelect("#adTextFilterPlatform", ["Todas", ...state.platforms]);
 }
 
 function fillSelect(selector, items) {
@@ -168,6 +170,13 @@ function bindEvents() {
   document.getElementById("exportListingsCsv").addEventListener("click", () => download("anuncios.csv", toCsv(state.listings)));
   document.getElementById("exportCrmCsv").addEventListener("click", () => download("crm.csv", toCsv(state.conversations)));
   document.getElementById("exportLibraryJson").addEventListener("click", () => download("biblioteca-respostas.json", JSON.stringify(state.responseLibrary, null, 2)));
+  document.getElementById("saveAdText").addEventListener("click", saveAdText);
+  document.getElementById("clearAdText").addEventListener("click", clearAdTextForm);
+  document.getElementById("adTextFilterKind").addEventListener("change", renderAdTexts);
+  document.getElementById("adTextFilterPlatform").addEventListener("change", renderAdTexts);
+  document.getElementById("exportAdTextsJson").addEventListener("click", () => download("titulos-corpos-anuncios.json", JSON.stringify(state.adTexts, null, 2)));
+  document.getElementById("exportAdTextsCsv").addEventListener("click", () => download("titulos-corpos-anuncios.csv", toCsv(state.adTexts)));
+  document.getElementById("copyAllAdTexts").addEventListener("click", () => copyText(filteredAdTexts().map((item) => item.text).join("\n"), "Textos copiados"));
   document.querySelector("[data-export='csv']").addEventListener("click", () => download("metricas.csv", toCsv(getMetricsRows())));
 }
 
@@ -364,6 +373,7 @@ function renderAll() {
   renderListingSelect();
   renderListings();
   renderCrm();
+  renderAdTexts();
   renderLibrary();
 }
 
@@ -668,6 +678,116 @@ function renderCrm() {
   document.getElementById("crmTable").innerHTML = `<table><thead><tr><th>Comprador</th><th>Plataforma</th><th>Categoria</th><th>Artigo</th><th>Pergunta</th><th>Resposta</th><th>Resultado</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+function saveAdText(event) {
+  event.preventDefault();
+  const text = document.getElementById("adTextValue").value.trim();
+  if (!text) {
+    showToast("Escreve um texto primeiro");
+    return;
+  }
+  state.adTexts.unshift({
+    id: uid(),
+    kind: document.getElementById("adTextKind").value,
+    platform: document.getElementById("adTextPlatform").value,
+    category: document.getElementById("adTextCategory").value.trim() || "Geral",
+    favorite: document.getElementById("adTextFavorite").value === "true",
+    uses: 0,
+    text,
+    createdAt: new Date().toISOString()
+  });
+  saveState();
+  clearAdTextForm();
+  renderAdTexts();
+  showToast("Texto guardado");
+}
+
+function clearAdTextForm(event) {
+  event?.preventDefault();
+  document.getElementById("adTextKind").value = "titulo";
+  document.getElementById("adTextPlatform").value = "Todas";
+  document.getElementById("adTextCategory").value = "";
+  document.getElementById("adTextFavorite").value = "false";
+  document.getElementById("adTextValue").value = "";
+}
+
+function filteredAdTexts() {
+  const kind = document.getElementById("adTextFilterKind")?.value || "todos";
+  const platform = document.getElementById("adTextFilterPlatform")?.value || "Todas";
+  const q = document.getElementById("globalSearch")?.value?.toLowerCase() || "";
+  return state.adTexts.filter((item) => {
+    const kindOk = kind === "todos" || item.kind === kind;
+    const platformOk = platform === "Todas" || item.platform === "Todas" || item.platform === platform;
+    const searchOk = JSON.stringify(item).toLowerCase().includes(q);
+    return kindOk && platformOk && searchOk;
+  });
+}
+
+function renderAdTexts() {
+  const root = document.getElementById("adTextLibrary");
+  if (!root) return;
+  const items = filteredAdTexts();
+  root.innerHTML = items.map((item) => `
+    <article class="library-item">
+      <div class="tag-row">
+        <span class="tag ${item.favorite ? "ok" : ""}">${item.favorite ? "Favorito" : item.kind}</span>
+        <span class="tag">${escapeHtml(item.platform)}</span>
+        <span class="tag">${escapeHtml(item.category)}</span>
+        <span class="tag">${item.uses || 0} usos</span>
+      </div>
+      <p>${escapeHtml(item.text).replace(/\n/g, "<br>")}</p>
+      <div class="card-actions">
+        <button class="small-btn" data-copy-adtext="${item.id}">Copiar</button>
+        <button class="small-btn" data-edit-adtext="${item.id}">Editar</button>
+        <button class="small-btn" data-duplicate-adtext="${item.id}">Duplicar</button>
+        <button class="small-btn" data-favorite-adtext="${item.id}">${item.favorite ? "Remover favorito" : "Favorito"}</button>
+        <button class="small-btn" data-delete-adtext="${item.id}">Apagar</button>
+      </div>
+    </article>
+  `).join("") || `<article class="library-item"><p>Ainda não há textos neste filtro.</p></article>`;
+  bindAdTextActions();
+}
+
+function bindAdTextActions() {
+  document.querySelectorAll("[data-copy-adtext]").forEach((button) => button.addEventListener("click", () => {
+    const item = state.adTexts.find((entry) => entry.id === button.dataset.copyAdtext);
+    item.uses = Number(item.uses || 0) + 1;
+    saveState();
+    copyText(item.text, "Texto copiado");
+    renderAdTexts();
+  }));
+  document.querySelectorAll("[data-edit-adtext]").forEach((button) => button.addEventListener("click", () => {
+    const item = state.adTexts.find((entry) => entry.id === button.dataset.editAdtext);
+    document.getElementById("adTextKind").value = item.kind;
+    document.getElementById("adTextPlatform").value = item.platform;
+    document.getElementById("adTextCategory").value = item.category;
+    document.getElementById("adTextFavorite").value = String(Boolean(item.favorite));
+    document.getElementById("adTextValue").value = item.text;
+    state.adTexts = state.adTexts.filter((entry) => entry.id !== item.id);
+    saveState();
+    renderAdTexts();
+    showToast("Texto carregado para edição");
+  }));
+  document.querySelectorAll("[data-duplicate-adtext]").forEach((button) => button.addEventListener("click", () => {
+    const item = state.adTexts.find((entry) => entry.id === button.dataset.duplicateAdtext);
+    state.adTexts.unshift({ ...item, id: uid(), text: `${item.text} (variação)`, favorite: false, createdAt: new Date().toISOString() });
+    saveState();
+    renderAdTexts();
+    showToast("Texto duplicado");
+  }));
+  document.querySelectorAll("[data-favorite-adtext]").forEach((button) => button.addEventListener("click", () => {
+    const item = state.adTexts.find((entry) => entry.id === button.dataset.favoriteAdtext);
+    item.favorite = !item.favorite;
+    saveState();
+    renderAdTexts();
+  }));
+  document.querySelectorAll("[data-delete-adtext]").forEach((button) => button.addEventListener("click", () => {
+    state.adTexts = state.adTexts.filter((entry) => entry.id !== button.dataset.deleteAdtext);
+    saveState();
+    renderAdTexts();
+    showToast("Texto apagado");
+  }));
+}
+
 function renderLibrary() {
   document.getElementById("responseLibrary").innerHTML = state.responseLibrary.map((item) => `
     <article class="library-item">
@@ -757,6 +877,14 @@ function uid() {
 }
 function clone(value) {
   return globalThis.structuredClone ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+}
+function migrateState(savedState) {
+  const migrated = { ...clone(SEED_DATA), ...savedState };
+  migrated.adTexts = savedState.adTexts?.length ? savedState.adTexts : clone(SEED_DATA.adTexts);
+  migrated.listings = savedState.listings || clone(SEED_DATA.listings);
+  migrated.responseLibrary = savedState.responseLibrary || clone(SEED_DATA.responseLibrary);
+  migrated.conversations = savedState.conversations || clone(SEED_DATA.conversations);
+  return migrated;
 }
 function intentExplanation(category) {
   const map = {

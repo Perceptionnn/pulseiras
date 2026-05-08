@@ -95,6 +95,9 @@
     }
 
     .research-link {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
       margin-bottom: 18px;
     }
 
@@ -109,6 +112,7 @@
       padding: 10px 14px;
       font-weight: 700;
       text-decoration: none;
+      text-align: center;
     }
 
     .research-link a:hover {
@@ -370,20 +374,141 @@
     }
 
     @media (max-width: 700px) {
+      header {
+        padding: 22px 0 20px;
+      }
+
+      .wrap {
+        width: min(100% - 22px, 1080px);
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 0.95rem;
+      }
+
+      main {
+        padding: 14px 0 30px;
+      }
+
       .toolbar {
         grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 12px;
       }
 
       .platform-links {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .platform-links a {
+        min-height: 44px;
+        padding: 9px 8px;
+        font-size: 0.92rem;
+      }
+
+      .research-link {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .research-link a {
+        width: 100%;
+        min-height: 46px;
       }
 
       .count {
         white-space: normal;
+        text-align: left;
+        padding-left: 2px;
+      }
+
+      .search {
+        padding: 13px 12px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .card-head,
+      .card-body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      h2 {
+        font-size: 1.08rem;
+      }
+
+      .copy-box {
+        padding: 11px;
+        font-size: 0.98rem;
+      }
+
+      .photo-grid {
+        gap: 7px;
       }
 
       .actions {
         grid-template-columns: 1fr;
+        gap: 7px;
+      }
+
+      button {
+        width: 100%;
+        min-height: 46px;
+      }
+
+      .research {
+        margin-top: 20px;
+      }
+
+      .research h2 {
+        font-size: 1.18rem;
+      }
+
+      .research-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .research-card {
+        padding: 14px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .wrap {
+        width: min(100% - 18px, 1080px);
+      }
+
+      h1 {
+        font-size: 1.72rem;
+      }
+
+      .platform-links {
+        grid-template-columns: 1fr;
+      }
+
+      .photo-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tags li {
+        font-size: 0.74rem;
+      }
+
+      .toast {
+        width: calc(100% - 28px);
+        text-align: center;
       }
     }
   </style>

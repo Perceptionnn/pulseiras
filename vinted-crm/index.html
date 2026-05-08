@@ -22,6 +22,7 @@
         <button class="nav-item" data-view="responses"><span>↗</span>Respostas</button>
         <button class="nav-item" data-view="saved"><span>▣</span>Anúncios</button>
         <button class="nav-item" data-view="crm"><span>◌</span>Mini CRM</button>
+        <button class="nav-item" data-view="texts"><span>✎</span>Textos</button>
         <button class="nav-item" data-view="library"><span>★</span>Biblioteca</button>
       </nav>
       <div class="sidebar-footer">
@@ -190,6 +191,57 @@
           </div>
           <div id="crmTable" class="table-wrap"></div>
         </div>
+      </section>
+
+      <section id="texts" class="view">
+        <div class="workspace-grid">
+          <section class="panel form-panel">
+            <div class="panel-head">
+              <h2>Adicionar texto de anúncio</h2>
+            </div>
+            <div class="form-grid">
+              <label>Tipo<select id="adTextKind">
+                <option value="titulo">Título</option>
+                <option value="corpo">Corpo de texto</option>
+              </select></label>
+              <label>Plataforma<select id="adTextPlatform"></select></label>
+              <label>Categoria<input id="adTextCategory" placeholder="Pulseira 82g, vintage, premium..."></label>
+              <label>Favorito?<select id="adTextFavorite">
+                <option value="false">Não</option>
+                <option value="true">Sim</option>
+              </select></label>
+              <label class="full">Texto<textarea id="adTextValue" rows="6" placeholder="Escreve ou cola aqui um título ou corpo de anúncio"></textarea></label>
+            </div>
+            <div class="form-actions">
+              <button id="saveAdText" class="primary-btn">Guardar texto</button>
+              <button id="clearAdText" class="secondary-btn">Limpar</button>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Filtros</h2>
+            </div>
+            <div class="form-grid">
+              <label>Tipo<select id="adTextFilterKind">
+                <option value="todos">Todos</option>
+                <option value="titulo">Títulos</option>
+                <option value="corpo">Corpos</option>
+              </select></label>
+              <label>Plataforma<select id="adTextFilterPlatform"></select></label>
+            </div>
+            <div class="form-actions">
+              <button id="exportAdTextsJson" class="small-btn">JSON</button>
+              <button id="exportAdTextsCsv" class="small-btn">CSV</button>
+            </div>
+          </section>
+        </div>
+        <section class="panel results-panel">
+          <div class="panel-head">
+            <h2>Títulos e corpos guardados</h2>
+            <button id="copyAllAdTexts" class="small-btn">Copiar tudo</button>
+          </div>
+          <div id="adTextLibrary" class="library-grid"></div>
+        </section>
       </section>
 
       <section id="library" class="view">

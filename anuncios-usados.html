@@ -67,6 +67,33 @@
       margin-bottom: 18px;
     }
 
+    .platform-links {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .platform-links a {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--accent-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 12px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 18px rgba(31, 36, 40, 0.04);
+    }
+
+    .platform-links a:hover {
+      border-color: rgba(34, 107, 95, 0.42);
+      background: var(--soft);
+    }
+
     .search {
       width: 100%;
       border: 1px solid var(--line);
@@ -281,6 +308,10 @@
         grid-template-columns: 1fr;
       }
 
+      .platform-links {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .count {
         white-space: normal;
       }
@@ -301,6 +332,13 @@
 
   <main>
     <div class="wrap">
+      <nav class="platform-links" aria-label="Acessos diretos às plataformas">
+        <a href="https://pt.wallapop.com/app/catalog/published" target="_blank" rel="noopener">Wallapop</a>
+        <a href="https://www.vinted.pt" target="_blank" rel="noopener">Vinted</a>
+        <a href="https://www.olx.pt/myaccount/" target="_blank" rel="noopener">OLX</a>
+        <a href="https://flashy.pt/my-listings" target="_blank" rel="noopener">Flashy</a>
+      </nav>
+
       <div class="toolbar">
         <input id="search" class="search" type="search" placeholder="Pesquisar por peça, peso, estilo ou plataforma..." autocomplete="off">
         <div id="count" class="count">3 anúncios</div>

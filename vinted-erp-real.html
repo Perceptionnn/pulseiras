@@ -460,6 +460,8 @@
   .badge-enviado::before { background: var(--blue); }
   .badge-entregue { background: rgba(200,242,90,0.12); color: var(--accent); }
   .badge-entregue::before { background: var(--accent); }
+  .badge-recebido { background: rgba(200,242,90,0.16); color: var(--green); }
+  .badge-recebido::before { background: var(--green); }
   .badge-cancelado { background: rgba(255,92,106,0.1); color: var(--red); }
   .badge-cancelado::before { background: var(--red); }
   .badge-reservado { background: rgba(124,92,252,0.14); color: #b7a8ff; }
@@ -1287,6 +1289,7 @@
           <option value="pendente">Valor pendente</option>
           <option value="pago">Valor pago</option>
           <option value="enviado">Valor enviado</option>
+          <option value="recebido">Valor recebido</option>
           <option value="entregue">Valor entregue</option>
           <option value="cancelado">Valor cancelado</option>
           <option value="reservado">Valor reservado</option>
@@ -1330,6 +1333,7 @@
           <option value="pendente">Pendente</option>
           <option value="pago">Pago</option>
           <option value="enviado">Enviado</option>
+          <option value="recebido">Recebido</option>
           <option value="entregue">Entregue</option>
           <option value="cancelado">Cancelado</option>
           <option value="reservado">Reservado</option>
@@ -1546,6 +1550,7 @@
             <tr>
               <th class="sortable" onclick="setSort('tracking','id')">#ID <span class="sort-arrow" data-sort="tracking:id"></span></th>
               <th class="sortable" onclick="setSort('tracking','buyer')">Comprador <span class="sort-arrow" data-sort="tracking:buyer"></span></th>
+              <th class="sortable" onclick="setSort('tracking','total')">Valor <span class="sort-arrow" data-sort="tracking:total"></span></th>
               <th>Plataforma</th>
               <th>Estado ERP</th>
               <th>Tracking</th>
@@ -1626,6 +1631,7 @@
           <option value="pendente">Pendente</option>
           <option value="pago">Pago</option>
           <option value="enviado">Enviado</option>
+          <option value="recebido">Recebido</option>
           <option value="entregue">Entregue</option>
           <option value="cancelado">Cancelado</option>
           <option value="reservado">Reservado</option>
@@ -2120,12 +2126,13 @@ async function deleteOrder(id) {
   notify('Encomenda apagada');
 }
 
-const STATUS_OPTIONS = ['pendente','reservado','pago','enviado','entregue','cancelado'];
+const STATUS_OPTIONS = ['pendente','reservado','pago','enviado','recebido','entregue','cancelado'];
 const STATUS_ICONS = {
   pendente: 'PN',
   reservado: 'RS',
   pago: 'PG',
   enviado: 'EV',
+  recebido: 'RC',
   entregue: 'ET',
   cancelado: 'CN'
 };
@@ -2134,6 +2141,7 @@ const STATUS_DESCRIPTIONS = {
   reservado: 'Apalavrado/reservado sem dinheiro libertado',
   pago: 'Pago e por enviar',
   enviado: 'Em transporte',
+  recebido: 'Recebido pelo comprador/ponto de entrega',
   entregue: 'Finalizado no comprador',
   cancelado: 'Sem valor ativo'
 };
@@ -2144,6 +2152,7 @@ function statusLabel(status) {
     reservado: 'Reservado',
     pago: 'Pago',
     enviado: 'Enviado',
+    recebido: 'Recebido',
     entregue: 'Entregue',
     cancelado: 'Cancelado'
   };
@@ -2843,9 +2852,10 @@ function renderShippingPlan() {
 
 // TRACKING
 function renderTracking() {
-  const list = orders.filter(o => ['enviado', 'entregue'].includes(o.status) || o.trackingInfo);
-  const travellingOrders = list.filter(o => o.status !== 'entregue');
+  const list = orders.filter(o => ['enviado', 'recebido', 'entregue'].includes(o.status) || o.trackingInfo);
+  const travellingOrders = list.filter(o => !['recebido', 'entregue'].includes(o.status));
   const inTransit = travellingOrders.length;
+  const received = list.filter(o => o.status === 'recebido').length;
   const delivered = list.filter(o => o.status === 'entregue').length;
   const withEmailUpdate = list.filter(o => o.trackingInfo?.sourceEmailId).length;
   const travellingValue = travellingOrders.reduce((sum, o) => sum + Number(o.total || 0), 0);
@@ -2860,6 +2870,9 @@ function renderTracking() {
     } else if (trackingSort.key === 'buyer') {
       av = (a.buyer || '').toLowerCase();
       bv = (b.buyer || '').toLowerCase();
+    } else if (trackingSort.key === 'total') {
+      av = Number(a.total || 0);
+      bv = Number(b.total || 0);
     } else {
       av = (a.id || '').toLowerCase();
       bv = (b.id || '').toLowerCase();
@@ -2877,6 +2890,10 @@ function renderTracking() {
     <div class="kpi-card k3">
       <div class="kpi-label">Em transito</div>
       <div class="kpi-val">${inTransit}</div>
+    </div>
+    <div class="kpi-card k5">
+      <div class="kpi-label">Recebidos</div>
+      <div class="kpi-val">${received}</div>
     </div>
     <div class="kpi-card k5">
       <div class="kpi-label">Entregues</div>
@@ -2900,7 +2917,7 @@ function renderTracking() {
   const tb = document.getElementById('tracking-table');
   const revolutTb = document.getElementById('revolut-forecast-table');
   if (!list.length) {
-    tb.innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-text">Ainda nao ha encomendas enviadas para acompanhar</div></div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="10"><div class="empty"><div class="empty-text">Ainda nao ha encomendas enviadas para acompanhar</div></div></td></tr>';
     if (revolutTb) revolutTb.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-text">Sem previsao de entrada Revolut</div></div></td></tr>';
     return;
   }
@@ -2911,10 +2928,11 @@ function renderTracking() {
       <tr>
         <td class="order-id">${o.id}</td>
         <td><div class="buyer-name">${o.buyer}</div>${o.username ? `<div style="color:var(--muted);font-size:11px;">${o.username}</div>` : ''}</td>
+        <td class="price">${Number(o.total || 0).toFixed(2)}â‚¬</td>
         <td>${platformBadgeHtml(o)}</td>
         <td>${statusSelect(o.id, o.status, o)}</td>
         <td>${trackingLinkHtml(o)}</td>
-        <td>${info.statusText || (o.status === 'entregue' ? 'Entregue' : 'Sem update')}</td>
+        <td>${info.statusText || (o.status === 'recebido' ? 'Recebido' : (o.status === 'entregue' ? 'Entregue' : 'Sem update'))}</td>
         <td>${info.expectedDelivery || 'Sem estimativa'}</td>
         <td>${info.product || productNames(o)}</td>
         <td>${info.sourceEmailId ? `<a class="mail-link" target="_blank" rel="noopener" href="${gmailMessageUrl(info.sourceEmailId)}">${info.sourceLabel || 'Email'}</a>` : gmailLinksHtml(o)}</td>
@@ -2922,7 +2940,7 @@ function renderTracking() {
     `;
   }).join('');
 
-  const revolutRows = sortedList.filter(o => o.status !== 'entregue');
+  const revolutRows = sortedList.filter(o => !['recebido', 'entregue'].includes(o.status));
   if (revolutTb) {
     const revolutTotal = revolutRows.reduce((sum, o) => sum + Number(o.total || 0), 0);
     revolutTb.innerHTML = revolutRows.map(o => {

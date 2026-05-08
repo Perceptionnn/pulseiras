@@ -1545,7 +1545,7 @@
 <script>
 // â”€â”€â”€ DATA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STORAGE_KEY = 'vinted_orders_reais_2026_05_06';
-const DATASET_VERSION = 'marketplace-online-mobile-export-2026-05-07-tracking-v7';
+const DATASET_VERSION = 'marketplace-online-mobile-export-2026-05-08-disputa-etiqueta-v8';
 let orders = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 let editingId = null;
 let productCount = 0;
@@ -2700,9 +2700,9 @@ if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== 
         "total": 50,
         "status": "enviado",
         "payment": "Wallapop",
-        "tracking": "DD415456101PT",
+        "tracking": "DD4177470208PT",
         "destinationCountry": "Espanha",
-        "notes": "Fonte Gmail Wallapop: venda 19dfbd0cbfac12d3; confirmacao/instrucoes 19dfbde4f62c95c5. Tracking CTT Expresso DD4115456101P lido da etiqueta Wallapop enviada em 07/05/2026; destino Madrid, Espanha. Update Wallapop screenshot: a empresa de transporte tem o pacote; codigo de envio CTT DD415456101PT.",
+        "notes": "Fonte Gmail Wallapop: venda 19dfbd0cbfac12d3; confirmacao/instrucoes 19dfbde4f62c95c5. Tracking anterior DD4115456101P/DD415456101PT substituido por etiqueta atualizada em 08/05/2026: DD4177470208PT. Destinatario Ivan Hernandez, Avenida De La Gavia 967-B, 28051 Madrid, Espanha. Etiqueta indica rota Para Alemanha 19E 1/1 e conteudo: objetos, permanente.",
         "gmail": {
             "saleEmailId": "19dfbd0cbfac12d3",
             "labelEmailId": "19dfbde4f62c95c5",
@@ -2714,10 +2714,10 @@ if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== 
         "trackingInfo": {
             "sourceEmailId": "",
             "sourceLabel": "Screenshot Wallapop",
-            "statusText": "A empresa de transporte tem o pacote",
-            "expectedDelivery": "A acompanhar no CTT",
+            "statusText": "Etiqueta atualizada",
+            "expectedDelivery": "A acompanhar por DD4177470208PT",
             "product": "Pulseira Prata India 82g",
-            "source": "Screenshot Wallapop fornecido em 07/05/2026 18:48"
+            "source": "Etiqueta fornecida em screenshot em 08/05/2026"
         }
     },
     {
@@ -2901,10 +2901,10 @@ if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== 
             }
         ],
         "total": 30,
-        "status": "enviado",
+        "status": "cancelado",
         "payment": "Vinted",
         "tracking": "09866096841879J",
-        "notes": "Fonte Gmail: venda 19ddb471e3ff4044; etiqueta 19de37ca3943491f. Vinted order ID 19493964822. Prazo etiqueta: 07/05/2026, 09h00.",
+        "notes": "Fonte Gmail: venda 19ddb471e3ff4044; etiqueta 19de37ca3943491f. Vinted order ID 19493964822. Disputa Vinted em 08/05/2026 por tamanho errado: comprador indica que o artigo foi descrito como 22 cm mas mede 26 cm, fica demasiado grande e escorrega do pulso. Resolucao apresentada: preco do pedido 30,00 EUR, reembolso total -30,00 EUR, receberas 0,00 EUR.",
         "gmail": {
             "saleEmailId": "19ddb471e3ff4044",
             "labelEmailId": "19de37ca3943491f",
@@ -2914,10 +2914,19 @@ if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== 
         "platform": "Vinted",
         "trackingInfo": {
             "sourceEmailId": "19df9850d92b215e",
-            "statusText": "A caminho do comprador",
-            "expectedDelivery": "Mai 07 - Mai 08",
+            "sourceLabel": "Screenshot Vinted",
+            "statusText": "Disputa por tamanho errado",
+            "expectedDelivery": "Reembolso total 30,00 EUR; receberas 0,00 EUR",
             "product": "Pulseira prata indiana",
-            "source": "Email Vinted de 05/05/2026 16:38"
+            "source": "Screenshot Vinted de detalhes do problema fornecido em 08/05/2026"
+        },
+        "disputeInfo": {
+            "date": "2026-05-08",
+            "reason": "Tamanho errado",
+            "buyerMessage": "Comprador indica que foi informado 22 cm, mas a pulseira mede 26 cm e fica demasiado grande.",
+            "orderPrice": 30,
+            "refund": -30,
+            "sellerReceives": 0
         }
     },
     {

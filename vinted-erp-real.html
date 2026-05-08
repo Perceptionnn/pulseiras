@@ -1545,7 +1545,7 @@
 <script>
 // â”€â”€â”€ DATA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STORAGE_KEY = 'vinted_orders_reais_2026_05_06';
-const DATASET_VERSION = 'marketplace-online-mobile-export-2026-05-08-disputa-etiqueta-v8';
+const DATASET_VERSION = 'marketplace-online-mobile-export-2026-05-08-ivan-colar-tracking-v9';
 let orders = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 let editingId = null;
 let productCount = 0;
@@ -2665,7 +2665,7 @@ if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== 
         "buyer": "Ivan",
         "email": "ivan@wallapop.local",
         "phone": "",
-        "address": "Wallapop - enviar a partir de um ponto de entrega",
+        "address": "Avenida De La Gavia 967-B, 28051 Madrid, Espanha",
         "products": [
             {
                 "name": "Colar Prata India 48,24 cm",
@@ -2674,13 +2674,22 @@ if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== 
             }
         ],
         "total": 50,
-        "status": "pendente",
+        "status": "enviado",
         "payment": "Wallapop",
         "platform": "Wallapop",
-        "tracking": "",
-        "notes": "Fonte Wallapop: confirmacao de venda em 08/05/2026. Dinheiro fica congelado e seguro ate confirmacao do comprador. Enviar a partir de ponto de entrega. Sem etiqueta/tracking no email.",
+        "tracking": "DD4177470208PT",
+        "destinationCountry": "Espanha",
+        "notes": "Fonte Wallapop: confirmacao de venda em 08/05/2026. Colar enviado em 08/05/2026. Tracking lido da etiqueta fornecida: DD4177470208PT. Destinatario Ivan Hernandez, Avenida De La Gavia 967-B, 28051 Madrid, Espanha. Etiqueta indica rota Para Alemanha 19E 1/1 e conteudo: objetos, permanente.",
         "gmail": {
             "query": "from:info@wallapop.com Ivan \"Colar Prata\" \"50,00\""
+        },
+        "trackingInfo": {
+            "sourceEmailId": "",
+            "sourceLabel": "Etiqueta fornecida",
+            "statusText": "Enviado hoje",
+            "expectedDelivery": "A acompanhar por DD4177470208PT",
+            "product": "Colar Prata India 48,24 cm",
+            "source": "Screenshot da etiqueta fornecido em 08/05/2026"
         }
     },
     {
@@ -2700,9 +2709,9 @@ if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== 
         "total": 50,
         "status": "enviado",
         "payment": "Wallapop",
-        "tracking": "DD4177470208PT",
+        "tracking": "DD415456101PT",
         "destinationCountry": "Espanha",
-        "notes": "Fonte Gmail Wallapop: venda 19dfbd0cbfac12d3; confirmacao/instrucoes 19dfbde4f62c95c5. Tracking anterior DD4115456101P/DD415456101PT substituido por etiqueta atualizada em 08/05/2026: DD4177470208PT. Destinatario Ivan Hernandez, Avenida De La Gavia 967-B, 28051 Madrid, Espanha. Etiqueta indica rota Para Alemanha 19E 1/1 e conteudo: objetos, permanente.",
+        "notes": "Fonte Gmail Wallapop: venda 19dfbd0cbfac12d3; confirmacao/instrucoes 19dfbde4f62c95c5. Tracking CTT Expresso DD4115456101P lido da etiqueta Wallapop enviada em 07/05/2026; destino Madrid, Espanha. Update Wallapop screenshot: a empresa de transporte tem o pacote; codigo de envio CTT DD415456101PT.",
         "gmail": {
             "saleEmailId": "19dfbd0cbfac12d3",
             "labelEmailId": "19dfbde4f62c95c5",
@@ -2714,10 +2723,10 @@ if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== 
         "trackingInfo": {
             "sourceEmailId": "",
             "sourceLabel": "Screenshot Wallapop",
-            "statusText": "Etiqueta atualizada",
-            "expectedDelivery": "A acompanhar por DD4177470208PT",
+            "statusText": "A empresa de transporte tem o pacote",
+            "expectedDelivery": "A acompanhar no CTT",
             "product": "Pulseira Prata India 82g",
-            "source": "Etiqueta fornecida em screenshot em 08/05/2026"
+            "source": "Screenshot Wallapop fornecido em 07/05/2026 18:48"
         }
     },
     {

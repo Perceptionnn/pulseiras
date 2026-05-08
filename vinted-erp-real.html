@@ -1666,8 +1666,14 @@
 <script>
 // â”€â”€â”€ DATA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STORAGE_KEY = 'vinted_orders_reais_2026_05_06';
-const DATASET_VERSION = 'marketplace-online-mobile-export-2026-05-08-leads-v8';
+const DATASET_VERSION = 'marketplace-online-mobile-export-2026-05-08-supabase-sync-v10';
+const SUPABASE_URL = 'https://rgqoilbnenvkdzcajvrq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_qGEJ7hAxRStrmIQyBAbm6A_noEk9P__';
+const SUPABASE_TABLE = 'orders';
 let orders = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+let supabaseReady = false;
+let supabaseSyncTimer = null;
+let supabaseIsSyncing = false;
 let editingId = null;
 let productCount = 0;
 let currentStatusPage = 'pendente';
@@ -1678,9 +1684,109 @@ const sortState = {
   tracking: { key: 'eta', dir: 'asc' }
 };
 
-function save() {
+function save(options = {}) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
   localStorage.setItem(STORAGE_KEY + '_version', DATASET_VERSION);
+  if (!options.localOnly) queueSupabaseSync();
+}
+
+function supabaseHeaders(extra = {}) {
+  return {
+    apikey: SUPABASE_KEY,
+    Authorization: `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    ...extra
+  };
+}
+
+function supabaseOrderPayload(order) {
+  return {
+    id: order.id,
+    data: order,
+    status: order.status || '',
+    buyer: order.buyer || '',
+    username: order.username || '',
+    total: Number(order.total || 0),
+    platform: order.platform || order.payment || '',
+    order_date: order.date || '',
+    updated_at: new Date().toISOString()
+  };
+}
+
+async function supabaseFetch(path, options = {}) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: supabaseHeaders(options.headers || {})
+  });
+  if (!response.ok) {
+    const text = await response.text().catch(() => '');
+    throw new Error(`Supabase ${response.status}: ${text || response.statusText}`);
+  }
+  if (response.status === 204) return null;
+  const raw = await response.text();
+  return raw ? JSON.parse(raw) : null;
+}
+
+async function loadOrdersFromSupabase() {
+  const rows = await supabaseFetch(`${SUPABASE_TABLE}?select=data&order=updated_at.desc`);
+  return (rows || []).map(row => row.data).filter(Boolean);
+}
+
+async function upsertOrdersToSupabase(list) {
+  if (!list.length) return;
+  await supabaseFetch(`${SUPABASE_TABLE}?on_conflict=id`, {
+    method: 'POST',
+    headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify(list.map(supabaseOrderPayload))
+  });
+}
+
+async function deleteOrderFromSupabase(id) {
+  if (!supabaseReady || !id) return;
+  await supabaseFetch(`${SUPABASE_TABLE}?id=eq.${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: { Prefer: 'return=minimal' }
+  });
+}
+
+function queueSupabaseSync() {
+  if (!supabaseReady) return;
+  clearTimeout(supabaseSyncTimer);
+  supabaseSyncTimer = setTimeout(() => syncOrdersToSupabase(), 350);
+}
+
+async function syncOrdersToSupabase() {
+  if (!supabaseReady || supabaseIsSyncing) return;
+  supabaseIsSyncing = true;
+  try {
+    await upsertOrdersToSupabase(orders);
+  } catch (err) {
+    console.error(err);
+    notify('Alteracao guardada neste browser; falhou sync online');
+  } finally {
+    supabaseIsSyncing = false;
+  }
+}
+
+async function initSupabaseSync() {
+  try {
+    const localSeed = Array.isArray(orders) ? [...orders] : [];
+    const remoteOrders = await loadOrdersFromSupabase();
+    supabaseReady = true;
+    if (remoteOrders.length) {
+      orders = remoteOrders;
+      save({ localOnly: true });
+      refreshAll();
+      notify('Dados carregados da Supabase');
+    } else if (localSeed.length) {
+      await upsertOrdersToSupabase(localSeed);
+      notify('Supabase inicializada com as encomendas atuais');
+    }
+  } catch (err) {
+    console.error(err);
+    supabaseReady = false;
+    notify('Modo local: nao foi possivel ligar a Supabase');
+  }
 }
 
 function setSort(table, key) {
@@ -1947,7 +2053,7 @@ function getProductsFromForm() {
   return products;
 }
 
-function saveOrder() {
+async function saveOrder() {
   const buyer = document.getElementById('f-buyer').value.trim();
   if (!buyer) { notify('âš ï¸ Nome do comprador obrigatÃ³rio'); return; }
 
@@ -1986,16 +2092,32 @@ function saveOrder() {
   }
 
   save();
+  if (supabaseReady) {
+    try {
+      await upsertOrdersToSupabase([order]);
+    } catch (err) {
+      console.error(err);
+      notify('Encomenda guardada localmente; falhou sync online');
+    }
+  }
   closeModal();
   refreshAll();
 }
 
-function deleteOrder(id) {
+async function deleteOrder(id) {
   if (!confirm('Apagar esta encomenda?')) return;
   orders = orders.filter(x => x.id !== id);
   save();
+  if (supabaseReady) {
+    try {
+      await deleteOrderFromSupabase(id);
+    } catch (err) {
+      console.error(err);
+      notify('Apagada neste browser; falhou sync online');
+    }
+  }
   refreshAll();
-  notify('ðŸ—‘ï¸ Encomenda apagada');
+  notify('Encomenda apagada');
 }
 
 const STATUS_OPTIONS = ['pendente','reservado','pago','enviado','entregue','cancelado'];
@@ -2050,7 +2172,7 @@ function statusHistoryText(order) {
   return last ? `Alterado ${last.at}: ${last.from || 'sem estado'} -> ${last.to}` : 'Sem alteracoes de estado registadas';
 }
 
-function changeStatus(id, val) {
+async function changeStatus(id, val) {
   const o = orders.find(x => x.id === id);
   if (!o) return;
   const previous = o.status || '';
@@ -2058,6 +2180,14 @@ function changeStatus(id, val) {
   o.status = val;
   recordStatusChange(o, previous, val, 'seletor ERP');
   save();
+  if (supabaseReady) {
+    try {
+      await upsertOrdersToSupabase([o]);
+    } catch (err) {
+      console.error(err);
+      notify('Estado guardado neste browser; falhou sync online');
+    }
+  }
   refreshAll();
   notify(`Estado ${id}: ${statusLabel(previous)} -> ${statusLabel(val)}`);
 }
@@ -2915,7 +3045,7 @@ async function downloadGithubHtml() {
     const response = await fetch(window.location.href, { cache: 'no-store' });
     let html = await response.text();
     const version = `marketplace-online-mobile-export-${stamp}-local-status-sync`;
-    html = html.replace(/const DATASET_VERSION = '[^']+';/, `const DATASET_VERSION = '${version}';`);
+    html = html.replace(/const DATASET_VERSION = '[^']+';/, `const DATASET_VERSION = 'marketplace-online-mobile-export-2026-05-08-supabase-sync-v10';`);
     html = html.replace(/const realOrders = \[[\s\S]*?\n\];\n\n  orders = realOrders;/, `const realOrders = ${dataset};\n\n  orders = realOrders;`);
     downloadTextFile('vinted-erp-real-github-ready.html', html, 'text/html;charset=utf-8');
     notify('HTML exportado com estados atuais para publicar no GitHub');
@@ -3370,6 +3500,8 @@ if (!orders.length || localStorage.getItem('vinted_orders_dataset_version') !== 
   renderStatusNav();
   renderDashboard();
 }
+
+initSupabaseSync();
 </script>
 </body>
 </html>

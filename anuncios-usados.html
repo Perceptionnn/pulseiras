@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Textos para Anúncios de Usados</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f5ef;
+      --paper: #ffffff;
+      --ink: #1f2428;
+      --muted: #667085;
+      --line: #d8d2c5;
+      --accent: #226b5f;
+      --accent-dark: #174b43;
+      --soft: #eef6f4;
+      --shadow: 0 14px 38px rgba(31, 36, 40, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    header {
+      background: #153f3a;
+      color: white;
+      padding: 28px 18px 24px;
+    }
+
+    .wrap {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.82);
+      max-width: 720px;
+      font-size: 1rem;
+    }
+
+    main {
+      padding: 22px 0 42px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .search {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--ink);
+      padding: 14px 14px;
+      font-size: 1rem;
+      box-shadow: 0 4px 18px rgba(31, 36, 40, 0.04);
+    }
+
+    .count {
+      color: var(--muted);
+      white-space: nowrap;
+      font-size: 0.95rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    article {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .card-head {
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--soft);
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 1.18rem;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tags li {
+      border: 1px solid rgba(34, 107, 95, 0.22);
+      border-radius: 999px;
+      color: var(--accent-dark);
+      background: white;
+      padding: 3px 8px;
+      font-size: 0.78rem;
+    }
+
+    .card-body {
+      padding: 16px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .field-label {
+      margin: 0 0 5px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .copy-box {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfaf7;
+      white-space: pre-wrap;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    button,
+    a.button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 11px;
+      font: inherit;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      color: white;
+      background: var(--accent);
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    button:hover,
+    a.button:hover {
+      background: var(--accent-dark);
+    }
+
+    .secondary {
+      background: #5d6470;
+    }
+
+    .secondary:hover {
+      background: #424852;
+    }
+
+    .link {
+      color: var(--accent-dark);
+      word-break: break-word;
+      font-size: 0.92rem;
+    }
+
+    .empty {
+      display: none;
+      padding: 24px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.58);
+      text-align: center;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      background: #153f3a;
+      color: white;
+      border-radius: 8px;
+      padding: 11px 14px;
+      box-shadow: var(--shadow);
+      transition: opacity 160ms ease, transform 160ms ease;
+      z-index: 10;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 700px) {
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .count {
+        white-space: normal;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Textos para Anúncios de Usados</h1>
+      <p class="subtitle">Biblioteca rápida para copiar títulos e descrições quando criares novos anúncios na Vinted, OLX, Wallapop ou outras plataformas.</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="toolbar">
+        <input id="search" class="search" type="search" placeholder="Pesquisar por peça, peso, estilo ou plataforma..." autocomplete="off">
+        <div id="count" class="count">3 anúncios</div>
+      </div>
+
+      <div id="empty" class="empty">Não encontrei nenhum texto com essa pesquisa.</div>
+
+      <section class="grid" id="cards" aria-label="Textos de anúncios">
+        <article data-search="pulseira prata india 82g malha cobra multi-fio vintage etnico boho rock streetwear">
+          <div class="card-head">
+            <h2>Pulseira Prata da Índia - 82g</h2>
+            <ul class="tags">
+              <li>Pulseira</li>
+              <li>82g</li>
+              <li>Prata Índia</li>
+              <li>Boho</li>
+            </ul>
+          </div>
+          <div class="card-body">
+            <div>
+              <p class="field-label">Título</p>
+              <p class="copy-box" data-title>Pulseira Prata da Índia - 82g</p>
+            </div>
+            <div>
+              <p class="field-label">Descrição</p>
+              <p class="copy-box" data-description>Pulseira estilo prata da Índia com impressionantes 82g e visual marcante em malha cobra multi-fio.
+
+Peça robusta, pesada e com excelente presença no pulso, inspirada nas pulseiras artesanais indianas vintage muito procuradas pelo seu estilo étnico/boho.
+
+Os detalhes e acabamento dão-lhe um look distinto e autêntico, ideal para quem gosta de acessórios com personalidade.
+
+Combina muito bem com estilos vintage, alternativo, rock, casual ou streetwear.</p>
+            </div>
+            <a class="link" href="https://www.vinted.pt/items/8833777886-pulseira-prata-indiana-82g" target="_blank" rel="noopener">Ver anúncio original</a>
+            <div class="actions">
+              <button type="button" data-copy="title">Copiar título</button>
+              <button type="button" data-copy="description">Copiar descrição</button>
+              <button class="secondary" type="button" data-copy="all">Copiar tudo</button>
+            </div>
+          </div>
+        </article>
+
+        <article data-search="pulseira prata india 35g malha cobra multi-fio vintage etnico boho rock streetwear confortavel">
+          <div class="card-head">
+            <h2>Pulseira Prata da Índia - 35g</h2>
+            <ul class="tags">
+              <li>Pulseira</li>
+              <li>35g</li>
+              <li>Prata Índia</li>
+              <li>Vintage</li>
+            </ul>
+          </div>
+          <div class="card-body">
+            <div>
+              <p class="field-label">Título</p>
+              <p class="copy-box" data-title>Pulseira Prata da Índia - 35g</p>
+            </div>
+            <div>
+              <p class="field-label">Descrição</p>
+              <p class="copy-box" data-description>Pulseira estilo prata da Índia com malha cobra multi-fio e excelente presença no pulso.
+Peça robusta com 35g, acabamento detalhado e visual vintage/étnico muito marcante.
+
+Inspirada nas joias artesanais indianas, combina facilmente com looks boho, alternativos, rock, casual ou streetwear.
+
+Muito confortável no pulso e com ótimo impacto visual.</p>
+            </div>
+            <a class="link" href="https://www.vinted.pt/items/8849624241-pulseira-prata-india-35g" target="_blank" rel="noopener">Ver anúncio original</a>
+            <div class="actions">
+              <button type="button" data-copy="title">Copiar título</button>
+              <button type="button" data-copy="description">Copiar descrição</button>
+              <button class="secondary" type="button" data-copy="all">Copiar tudo</button>
+            </div>
+          </div>
+        </article>
+
+        <article data-search="colar prata india 48 cm 95g 95gr malha cobra vintage etnico boho casual alternativo sofisticado">
+          <div class="card-head">
+            <h2>Colar Prata da Índia - 48 cm - 95g</h2>
+            <ul class="tags">
+              <li>Colar</li>
+              <li>48 cm</li>
+              <li>95g</li>
+              <li>Étnico</li>
+            </ul>
+          </div>
+          <div class="card-body">
+            <div>
+              <p class="field-label">Título</p>
+              <p class="copy-box" data-title>Colar Prata da Índia - 48 cm - 95g</p>
+            </div>
+            <div>
+              <p class="field-label">Descrição</p>
+              <p class="copy-box" data-description>Colar estilo prata da Índia com impressionantes 95g e malha cobra de forte impacto visual.
+
+Peça robusta e marcante, inspirada nas joias artesanais indianas vintage, com excelente presença ao usar.
+
+O acabamento e textura da malha dão-lhe um visual étnico/boho muito procurado atualmente, funcionando tanto em looks casuais como alternativos ou mais sofisticados.</p>
+            </div>
+            <a class="link" href="https://www.vinted.pt/items/8849594327-colar-prata-india-48-cm-95gr" target="_blank" rel="noopener">Ver anúncio original</a>
+            <div class="actions">
+              <button type="button" data-copy="title">Copiar título</button>
+              <button type="button" data-copy="description">Copiar descrição</button>
+              <button class="secondary" type="button" data-copy="all">Copiar tudo</button>
+            </div>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">Copiado</div>
+
+  <script>
+    const searchInput = document.querySelector('#search');
+    const cards = [...document.querySelectorAll('article')];
+    const count = document.querySelector('#count');
+    const empty = document.querySelector('#empty');
+    const toast = document.querySelector('#toast');
+    let toastTimer;
+
+    function normalize(text) {
+      return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function updateSearch() {
+      const query = normalize(searchInput.value.trim());
+      let visible = 0;
+
+      cards.forEach((card) => {
+        const haystack = normalize(card.innerText + ' ' + card.dataset.search);
+        const show = !query || haystack.includes(query);
+        card.style.display = show ? '' : 'none';
+        if (show) visible += 1;
+      });
+
+      count.textContent = `${visible} anúncio${visible === 1 ? '' : 's'}`;
+      empty.style.display = visible ? 'none' : 'block';
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1400);
+    }
+
+    async function copyText(text, label) {
+      try {
+        await navigator.clipboard.writeText(text.trim());
+        showToast(`${label} copiado`);
+      } catch (error) {
+        const area = document.createElement('textarea');
+        area.value = text.trim();
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+        showToast(`${label} copiado`);
+      }
+    }
+
+    document.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-copy]');
+      if (!button) return;
+
+      const card = button.closest('article');
+      const title = card.querySelector('[data-title]').innerText;
+      const description = card.querySelector('[data-description]').innerText;
+      const type = button.dataset.copy;
+
+      if (type === 'title') copyText(title, 'Título');
+      if (type === 'description') copyText(description, 'Descrição');
+      if (type === 'all') copyText(`${title}\n\n${description}`, 'Título e descrição');
+    });
+
+    searchInput.addEventListener('input', updateSearch);
+    updateSearch();
+  </script>
+</body>
+</html>

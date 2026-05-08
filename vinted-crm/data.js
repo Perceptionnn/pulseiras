@@ -7,6 +7,16 @@ const SEED_DATA = {
   tones: ["curto", "neutro", "premium", "persuasivo", "cauteloso", "fecho de venda"],
   languages: ["Português PT", "Espanhol", "Inglês"],
   results: ["interessado", "comprou", "recusou", "negociar depois"],
+  adTexts: [
+    { id: "title-82g-1", kind: "titulo", platform: "Todas", category: "Pulseira 82g", favorite: true, uses: 0, text: "Pulseira Silver Tone Malha Cobra 82g", createdAt: "2026-05-08T19:30:00.000Z" },
+    { id: "title-82g-2", kind: "titulo", platform: "Todas", category: "Pulseira 82g", favorite: false, uses: 0, text: "Pulseira Silver Tone Multi-Fio 82g", createdAt: "2026-05-08T19:31:00.000Z" },
+    { id: "title-82g-3", kind: "titulo", platform: "Todas", category: "Vintage", favorite: false, uses: 0, text: "Pulseira Vintage Silver Tone Multi-Fio", createdAt: "2026-05-08T19:32:00.000Z" },
+    { id: "title-82g-4", kind: "titulo", platform: "Todas", category: "Statement", favorite: false, uses: 0, text: "Pulseira Silver Tone com Grande Presença", createdAt: "2026-05-08T19:33:00.000Z" },
+    { id: "title-82g-5", kind: "titulo", platform: "Todas", category: "Malha cobra", favorite: false, uses: 0, text: "Pulseira Cobra Multi-Fio Silver Tone", createdAt: "2026-05-08T19:34:00.000Z" },
+    { id: "title-82g-6", kind: "titulo", platform: "Todas", category: "Vintage", favorite: false, uses: 0, text: "Pulseira Silver Tone Estilo Vintage", createdAt: "2026-05-08T19:35:00.000Z" },
+    { id: "title-82g-7", kind: "titulo", platform: "Todas", category: "Pulseira 82g", favorite: false, uses: 0, text: "Pulseira Multi-Fio Silver Tone 82g", createdAt: "2026-05-08T19:36:00.000Z" },
+    { id: "title-82g-8", kind: "titulo", platform: "Todas", category: "Trabalhada", favorite: false, uses: 0, text: "Pulseira Silver Tone Trabalhada 82g", createdAt: "2026-05-08T19:37:00.000Z" }
+  ],
   listings: [
     {
       id: "seed-82g",
